@@ -1,0 +1,33 @@
+Mono path[0] = 'C:/Users/e/GitHub/ProjectPrincess/bin/test_Data/Managed'
+Mono path[1] = 'C:/Users/e/GitHub/ProjectPrincess/bin/test_Data/Mono'
+Mono config path = 'C:/Users/e/GitHub/ProjectPrincess/bin/test_Data/Mono/etc'
+PlayerConnection initialized from C:/Users/e/GitHub/ProjectPrincess/bin/test_Data (debug = 0)
+PlayerConnection initialized network socket : 0.0.0.0 55160
+Multi-casting "[IP] 192.168.2.7 [Port] 55160 [Flags] 2 [Guid] 1090343273 [EditorId] 2582368304 [Version] 1048832 [Id] WindowsPlayer(E) [Debug] 0" to [225.0.0.222:54997]...
+PlayerConnection already initialized - listening to [192.168.2.7:55160]
+Initialize engine version: 5.4.1f1 (649f48bbbf0f)
+GfxDevice: creating device client; threaded=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.0]
+    Renderer: Intel(R) HD Graphics 520 (ID=0x1916)
+    Vendor:   Intel
+    VRAM:     2146 MB
+Begin MonoManager ReloadAssembly
+Platform assembly: C:\Users\e\GitHub\ProjectPrincess\bin\test_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading C:\Users\e\GitHub\ProjectPrincess\bin\test_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: C:\Users\e\GitHub\ProjectPrincess\bin\test_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading C:\Users\e\GitHub\ProjectPrincess\bin\test_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: C:\Users\e\GitHub\ProjectPrincess\bin\test_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading C:\Users\e\GitHub\ProjectPrincess\bin\test_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+Platform assembly: C:\Users\e\GitHub\ProjectPrincess\bin\test_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading C:\Users\e\GitHub\ProjectPrincess\bin\test_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+- Completed reload, in  0.499 seconds
+Platform assembly: C:\Users\e\GitHub\ProjectPrincess\bin\test_Data\Managed\System.Core.dll (this message is harmless)
+Platform assembly: C:\Users\e\GitHub\ProjectPrincess\bin\test_Data\Managed\System.dll (this message is harmless)
+desktop: 1920x1080 60Hz; virtual: 1920x1080 at 0,0
+<RI> Initializing input.
+<RI> Input initialized.
+<RI> Initialized touch support.
+UnloadTime: 3.874556 ms
+Setting up 1 worker threads for Enlighten.
+  Thread -> id: 26fc -> priority: 1 
