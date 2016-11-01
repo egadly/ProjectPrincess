@@ -39,7 +39,7 @@ public class Mouse : Character {
 			currentState = nextState;
 		}
 
-		if ( counterState == 0) stateLength = (int)Random.Range (45, 75);
+		if ( counterState == 0) stateLength = (int)Random.Range (15, 60);
 
 		gameObject.GetComponent<Animator> ().SetInteger ("State", (int)currentState);
 
@@ -63,10 +63,16 @@ public class Mouse : Character {
 	void stateIdle() {
 		if (counterState == stateLength) {
 			nextState = MouseStates.Run;
-			if ((((int)Random.Range (0, 99)) % 2) == 0)
+			if (platformLeft)
 				rightDir = true;
-			else
+			else if (platformRight)
 				rightDir = false;
+			else {
+				if ((((int)Random.Range (0, 99)) % 2) == 0)
+					rightDir = true;
+				else
+					rightDir = false;
+			}
 		}
 
 		if (velocity.x > 0)
@@ -76,21 +82,25 @@ public class Mouse : Character {
 
 		physAdjust ();
 
-		if ( !isGrounded ) nextState = MouseStates.Fall;
+		if ( !platformBelow ) nextState = MouseStates.Fall;
 	}
 
 	void stateRun() {
 		if (counterState == stateLength) {
 			nextState = MouseStates.Idle;
 		}
-		if (rightDir)
+		if (rightDir) {
 			velocity.x += 0.0125f;
-		else
+			if (platformRight)
+				nextState = MouseStates.Idle;
+		} else {
 			velocity.x -= 0.0125f;
-
+			if (platformLeft)
+				nextState = MouseStates.Idle;
+		}
 		physAdjust ();
 
-		if ( !isGrounded ) nextState = MouseStates.Fall;
+		if ( !platformBelow ) nextState = MouseStates.Fall;
 	}
 
 	void stateFall() {
@@ -98,7 +108,7 @@ public class Mouse : Character {
 
 		physAdjust ();
 
-		if (isGrounded != null)
+		if (platformBelow != null)
 			nextState = MouseStates.Idle;
 	}
 }

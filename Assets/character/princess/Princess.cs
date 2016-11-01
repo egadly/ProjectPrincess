@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Princess: Character{
 
-	public enum PrincessStates { Idle, Run, Jump, Fall, Crouch, Land };
+	public enum PrincessStates { Idle, Run, Jump, Fall, Crouch, Land, Brace, WallJump };
 	public PrincessStates currentState;
 	public PrincessStates nextState;
 	public int counterState;
@@ -61,17 +61,19 @@ public class Princess: Character{
 		case PrincessStates.Land:
 			stateLand ();
 			break;
+		case PrincessStates.Brace:
+			stateBrace ();
+			break;
+		case PrincessStates.WallJump:
+			stateWallJump();
+			break;
 		}
 
 
-		col = ifCollision (1 << LayerMask.NameToLayer ("Enemies"));
+		//col = ifCollision (1 << LayerMask.NameToLayer ("Enemies"));
 
 		if ( col != null ) {
 			velocity.y = 0.2f;
-			if (rightDir)
-				velocity.x = -.2f;
-			else
-				velocity.x = .2f;
 		}
 			
 		spriteRenderer.flipX = !rightDir;
@@ -112,7 +114,7 @@ public class Princess: Character{
 			velocity.x = 0;
 		}
 
-		isGrounded = Physics2D.OverlapCircle (Utilities.Vec2 (position.x, position.y - col.size.y / 2f), 0.05f, platforms);
+		platformBelow = Physics2D.OverlapCircle (Utilities.Vec2 (position.x, position.y - col.size.y / 2f), 0.05f, platforms);
 	}*/
 
 	//Begin State Functions
@@ -124,7 +126,7 @@ public class Princess: Character{
 			velocity.x = Mathf.Min (velocity.x + .0125f, 0f);
 		
 		physAdjust ();
-		if (!isGrounded)
+		if (!platformBelow)
 			nextState = PrincessStates.Fall;
 		if (Input.GetKey (KeyCode.J))
 			nextState = PrincessStates.Crouch;
@@ -155,7 +157,7 @@ public class Princess: Character{
 		if (Input.GetKeyDown(KeyCode.J) ){
 			nextState = PrincessStates.Crouch;
 			}
-		if (!isGrounded)
+		if (!platformBelow)
 			nextState = PrincessStates.Fall;
 				
 	}
@@ -176,6 +178,10 @@ public class Princess: Character{
 		if (Input.GetKey (KeyCode.A))
 			velocity.x -= 0.003125f;
 
+		if (Input.GetKeyDown( KeyCode.J ) && ((platformRight)||(platformLeft)) ){
+			nextState = PrincessStates.Brace;
+		}
+
 		physAdjust ();
 		if (velocity.y <= 0)
 			nextState = PrincessStates.Fall;
@@ -189,10 +195,14 @@ public class Princess: Character{
 			velocity.x += 0.003125f;
 		if (Input.GetKey (KeyCode.A))
 			velocity.x -= 0.003125f;
+
+		if (Input.GetKeyDown( KeyCode.J ) && ((platformRight)||(platformLeft)) ){
+			nextState = PrincessStates.Brace;
+		}
 		
 		physAdjust ();
 
-		if (isGrounded) nextState = PrincessStates.Land; 
+		if (platformBelow) nextState = PrincessStates.Land; 
 	}
 
 	void stateCrouch() {
@@ -202,7 +212,7 @@ public class Princess: Character{
 			velocity.y = maxVspeed;
 			nextState = PrincessStates.Jump;
 		}
-		if (!isGrounded)
+		if (!platformBelow)
 			nextState = PrincessStates.Fall;
 	}
 
@@ -219,6 +229,46 @@ public class Princess: Character{
 			nextState = PrincessStates.Idle;
 	}
 
-	void OnDrawGizmos() {
+	void stateBrace() {
+		if (counterState == 0)
+			velocity.y = 0;
+
+		physAdjust ();
+		if (counterState == 6) {
+			velocity.y = maxVspeed;
+			nextState = PrincessStates.WallJump;
+		}
 	}
+
+	void stateWallJump() {
+
+		if (counterState == 0) {
+			velocity.y = 0.4f;
+			if (platformRight) {
+				rightDir = false;
+				velocity.x = -0.1f;
+			} else {
+				rightDir = true;
+				velocity.x = 0.1f;
+			}
+		}
+
+		velocity.y -= gravity;
+
+		if (Input.GetKey (KeyCode.D))
+			velocity.x += 0.003125f;
+		if (Input.GetKey (KeyCode.A))
+			velocity.x -= 0.003125f;
+
+		if (Input.GetKeyDown( KeyCode.J ) && ((platformRight)||(platformLeft)) ){
+			nextState = PrincessStates.Brace;
+		}
+
+		physAdjust ();
+		if (velocity.y <= 0)
+			nextState = PrincessStates.Fall;
+		
+	}
+
+		
 }
