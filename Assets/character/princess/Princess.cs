@@ -3,24 +3,27 @@ using System.Collections;
 
 public class Princess: Character{
 
-	float gravity = 0.025f;
-	float maxVspeed = 1f;
-
 	public enum PrincessStates { Idle, Run, Jump, Fall, Crouch, Land };
 	public PrincessStates currentState;
 	public PrincessStates nextState;
 	public int counterState;
 
-	public bool rightDir;
+	public Collider2D col;
 
-	public SpriteRenderer rend;
+	public bool rightDir;
 
 	// Use this for initialization
 	void Start () {
 		position = transform.position;
+
+		gravity = 0.0125f;
+		maxVspeed = .2f;
+		maxHspeed = .1f;
+
 		currentState = PrincessStates.Idle;
 		rightDir = true;
-		rend = gameObject.GetComponent<SpriteRenderer> ();
+		spriteRenderer = gameObject.GetComponent<SpriteRenderer> ();
+		rigidBody = gameObject.GetComponent<Rigidbody2D> ();
 		/*Application.targetFrameRate = 5;
 		QualitySettings.vSyncCount = 0;*/
 
@@ -28,39 +31,55 @@ public class Princess: Character{
 	
 	// Update is called once per frame
 	void Update () {
-			if (currentState == nextState)
-				counterState++;
-			else {
-				counterState = 0;
-				currentState = nextState;
-			}
 
-			switch (currentState) {
-			case PrincessStates.Idle:
-				stateIdle ();
-				break;
-			case PrincessStates.Run:
-				stateRun ();
-				break;
-			case PrincessStates.Jump:
-				stateJump ();
-				break;
-			case PrincessStates.Fall:
-				stateFall ();
-				break;
-			case PrincessStates.Crouch:
-				stateCrouch ();
-				break;
-			case PrincessStates.Land:
-				stateLand ();
-				break;
-			}
+		rigidBody.WakeUp ();
+		
+		if (currentState == nextState)
+			counterState++;
+		else {
+			counterState = 0;
+			currentState = nextState;
+		}
+		gameObject.GetComponent<Animator> ().SetInteger ("State", (int)currentState);
+
+		switch (currentState) {
+		case PrincessStates.Idle:
+			stateIdle ();
+			break;
+		case PrincessStates.Run:
+			stateRun ();
+			break;
+		case PrincessStates.Jump:
+			stateJump ();
+			break;
+		case PrincessStates.Fall:
+			stateFall ();
+			break;
+		case PrincessStates.Crouch:
+			stateCrouch ();
+			break;
+		case PrincessStates.Land:
+			stateLand ();
+			break;
+		}
+
+
+		col = ifCollision (1 << LayerMask.NameToLayer ("Enemies"));
+
+		if ( col != null ) {
+			velocity.y = 0.2f;
+			if (rightDir)
+				velocity.x = -.2f;
+			else
+				velocity.x = .2f;
+		}
 			
-			rend.flipX = !rightDir;
-			transform.position = position;
+		spriteRenderer.flipX = !rightDir;
+		transform.position = position;
+	
 	}
 
-	/*void physicAdjust() {
+	/*void physAdjust() {
 
 		position += velocity;
 
@@ -98,38 +117,43 @@ public class Princess: Character{
 
 	//Begin State Functions
 	void stateIdle() {
-		gameObject.GetComponent<Animator> ().SetInteger ("State", (int)currentState);
-		if (velocity.x > 0 || velocity.x < 0 )
-			velocity.x /= 2f;
-		physicAdjust ();
+		
+		if (velocity.x > 0)
+			velocity.x = Mathf.Max (velocity.x - .0125f, 0f);
+		if (velocity.x < 0)
+			velocity.x = Mathf.Min (velocity.x + .0125f, 0f);
+		
+		physAdjust ();
 		if (!isGrounded)
 			nextState = PrincessStates.Fall;
 		if (Input.GetKey (KeyCode.J))
 			nextState = PrincessStates.Crouch;
-		if (Input.GetKey (KeyCode.D)||Input.GetKey (KeyCode.A))
+		if (Input.GetKey (KeyCode.D) || Input.GetKey (KeyCode.A)) {
+			rightDir = Input.GetKey (KeyCode.D);
 			nextState = PrincessStates.Run;
+		}
 	}
 
 	void stateRun() {
-		gameObject.GetComponent<Animator> ().SetInteger ("State", (int)currentState);
-		if (Input.GetKey (KeyCode.D)) {
-			rightDir = true;
-			velocity.x += 0.1f;
-		}
-		if (Input.GetKey (KeyCode.A)) {
-			rightDir = false;
-			velocity.x -= 0.1f;
-		}
-		if (velocity.x > 0.2f)
-			velocity.x = 0.2f;
-		if (velocity.x < -0.2f)
-			velocity.x = -0.2f;
-		physicAdjust ();
+
+		if (Input.GetKey (KeyCode.D))
+			velocity.x += 0.025f;
+		if (Input.GetKey (KeyCode.A))
+			velocity.x -= 0.025f;
+
+		if (velocity.x>0) rightDir = true;
+		if (velocity.x<0) rightDir = false;
+
+		velocity.x = Mathf.Min( maxHspeed, velocity.x );
+		velocity.x = Mathf.Max( -maxHspeed, velocity.x );
+
+		
+		physAdjust ();
 		if (Input.GetKeyUp (KeyCode.D)||Input.GetKeyUp (KeyCode.A)) {
 			nextState = PrincessStates.Idle;
 		} else
 		if (Input.GetKeyDown(KeyCode.J) ){
-			nextState = PrincessStates.Jump;
+			nextState = PrincessStates.Crouch;
 			}
 		if (!isGrounded)
 			nextState = PrincessStates.Fall;
@@ -137,51 +161,64 @@ public class Princess: Character{
 	}
 
 	void stateJump() {
-		gameObject.GetComponent<Animator> ().SetInteger ("State", (int)currentState);
-		if (counterState <= 10 && Input.GetKey (KeyCode.J))
-			velocity.y = 0.2f;
+
+		if (counterState <= 5 && Input.GetKey (KeyCode.J))
+			velocity.y = maxVspeed;
 		else {
 			if (Input.GetKeyUp (KeyCode.J)) {
 				counterState = 11;
-			} else if (counterState == 0) {
-				velocity.y = 0.2f;
 			}
 			velocity.y -= gravity;
 		}
-		physicAdjust ();
+
+		if (Input.GetKey (KeyCode.D))
+			velocity.x += 0.003125f;
+		if (Input.GetKey (KeyCode.A))
+			velocity.x -= 0.003125f;
+
+		physAdjust ();
 		if (velocity.y <= 0)
 			nextState = PrincessStates.Fall;
 	}
 
 	void stateFall() {
-		gameObject.GetComponent<Animator> ().SetInteger ("State", (int)currentState);
+
 		velocity.y -= gravity;
-		if (velocity.y <= -0.2f)
-			velocity.y = -0.2f;
-		physicAdjust ();
+
+		if (Input.GetKey (KeyCode.D))
+			velocity.x += 0.003125f;
+		if (Input.GetKey (KeyCode.A))
+			velocity.x -= 0.003125f;
+		
+		physAdjust ();
+
 		if (isGrounded) nextState = PrincessStates.Land; 
 	}
 
 	void stateCrouch() {
-		gameObject.GetComponent<Animator> ().SetInteger ("State", (int)currentState);
-		physicAdjust ();
-		if (counterState == 4) {
-			nextState = PrincessStates.Jump; //Change this to Jump when Finalizing
+
+		physAdjust ();
+		if (counterState == 5) {
+			velocity.y = maxVspeed;
+			nextState = PrincessStates.Jump;
 		}
 		if (!isGrounded)
 			nextState = PrincessStates.Fall;
 	}
 
 	void stateLand() {
-		gameObject.GetComponent<Animator> ().SetInteger ("State", (int)currentState);
-		physicAdjust ();
-		if (counterState == 3)
+
+		if (velocity.x > 0)
+			velocity.x = Mathf.Max (velocity.x - .0125f, 0f);
+		if (velocity.x < 0)
+			velocity.x = Mathf.Min (velocity.x + .0125f, 0f);
+
+		physAdjust ();
+
+		if (counterState == 5)
 			nextState = PrincessStates.Idle;
 	}
 
 	void OnDrawGizmos() {
-		BoxCollider2D col = gameObject.GetComponent<BoxCollider2D> ();
-		Gizmos.color = Color.red;
-		Gizmos.DrawSphere (Utilities.Vec3 (position.x - col.size.x/2f +col.size.x/4f, position.y + col.size.y/2f, 1f), .1f);
 	}
 }
