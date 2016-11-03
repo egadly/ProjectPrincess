@@ -3,10 +3,14 @@ using System.Collections;
 
 public class Princess: Character{
 
-	public enum PrincessStates { Idle, Run, Jump, Fall, Crouch, Land, Brace, WallJump };
+	public enum PrincessStates { Idle, Run, Jump, Fall, Crouch, Land, Brace, WallJump, Hitstun };
 	public PrincessStates currentState;
 	public PrincessStates nextState;
 	public int counterState;
+
+	public int counterShake;
+
+	public int counterInvulnerable;
 
 	public Collider2D col;
 
@@ -40,6 +44,7 @@ public class Princess: Character{
 			counterState = 0;
 			currentState = nextState;
 		}
+		counterInvulnerable = Mathf.Max (--counterInvulnerable, 0);
 		gameObject.GetComponent<Animator> ().SetInteger ("State", (int)currentState);
 
 		switch (currentState) {
@@ -67,55 +72,40 @@ public class Princess: Character{
 		case PrincessStates.WallJump:
 			stateWallJump();
 			break;
+		case PrincessStates.Hitstun:
+			stateHitstun ();
+			break;
 		}
 
 
 		//col = ifCollision (1 << LayerMask.NameToLayer ("Enemies"));
 
-		if ( col != null ) {
-			velocity.y = 0.2f;
-		}
-			
+		if (counterInvulnerable!=0)
+			spriteRenderer.color = Color.red;
+		else
+			spriteRenderer.color = Color.white;
 		spriteRenderer.flipX = !rightDir;
-		transform.position = position;
+		if (counterShake == 0)
+			transform.position = position;
+		else
+			transform.position = Utilities.Vec3 (position.x + Random.Range (-0.1f, 0.1f), position.y + Random.Range (-0.1f, 0.1f), position.z); 
 	
 	}
 
-	/*void physAdjust() {
-
-		position += velocity;
-
-		BoxCollider2D col = gameObject.GetComponent<BoxCollider2D> ();
-		LayerMask platforms = 1 << LayerMask.NameToLayer ("Platforms");
-
-		Collider2D other;
-		//Bottom Collider Check
-		other = Physics2D.OverlapArea( Utilities.Vec2( position.x - .05f, position.y), Utilities.Vec2( position.x + .05f, position.y- col.size.y/2f), platforms);
-		if (other!= null) {
-			position.y = other.transform.position.y + 1f;
-			velocity.y = 0;
+	//Begin Common Functions
+	void enemyCollisionCheck() {
+		if (counterInvulnerable == 0) {
+			Collider2D other = ifCollision (1 << LayerMask.NameToLayer ("Enemies"));
+			if (other != null) {
+				if (other.gameObject.transform.position.x >= position.x)
+					velocity.x = -0.1f;
+				else
+					velocity.x = 0.1f;
+				velocity.y = 0;
+				nextState = PrincessStates.Hitstun;
+			}
 		}
-		//Top Collider Check
-		other = Physics2D.OverlapArea( Utilities.Vec2( position.x - .05f, position.y + col.size.y/2f), Utilities.Vec2( position.x + .05f, position.y), platforms);
-		if (other!= null) {
-			position.y = other.transform.position.y - 1f;
-			velocity.y = 0;
-		}
-		//Right Collider Check
-		other = Physics2D.OverlapArea( Utilities.Vec2( position.x, position.y + .25f), Utilities.Vec2( position.x + col.size.x/2f, position.y- .25f), platforms);
-		if (other!= null) {
-			position.x = other.transform.position.x - 0.75f;
-			velocity.x = 0;
-		}
-		//Left Collider Check
-		other = Physics2D.OverlapArea( Utilities.Vec2( position.x-col.size.x/2f, position.y +.25f), Utilities.Vec2( position.x , position.y-.25f), platforms);
-		if (other!= null) {
-			position.x = other.transform.position.x + 0.75f;
-			velocity.x = 0;
-		}
-
-		platformBelow = Physics2D.OverlapCircle (Utilities.Vec2 (position.x, position.y - col.size.y / 2f), 0.05f, platforms);
-	}*/
+	}
 
 	//Begin State Functions
 	void stateIdle() {
@@ -134,6 +124,7 @@ public class Princess: Character{
 			rightDir = Input.GetKey (KeyCode.D);
 			nextState = PrincessStates.Run;
 		}
+		enemyCollisionCheck ();
 	}
 
 	void stateRun() {
@@ -159,6 +150,7 @@ public class Princess: Character{
 			}
 		if (!platformBelow)
 			nextState = PrincessStates.Fall;
+		enemyCollisionCheck ();
 				
 	}
 
@@ -213,7 +205,8 @@ public class Princess: Character{
 			nextState = PrincessStates.Jump;
 		}
 		if (!platformBelow)
-			nextState = PrincessStates.Fall;
+			nextState = PrincessStates.Jump;
+		enemyCollisionCheck ();
 	}
 
 	void stateLand() {
@@ -227,6 +220,7 @@ public class Princess: Character{
 
 		if (counterState == 5)
 			nextState = PrincessStates.Idle;
+		enemyCollisionCheck ();
 	}
 
 	void stateBrace() {
@@ -268,6 +262,23 @@ public class Princess: Character{
 		if (velocity.y <= 0)
 			nextState = PrincessStates.Fall;
 		
+	}
+
+	void stateHitstun() {
+
+		counterInvulnerable = 1;
+
+		if (counterState > 6) {
+			physAdjust ();
+			counterShake = 0;
+		}
+		else
+			counterShake = 1;
+
+		if (counterState == 15) {
+			nextState = PrincessStates.Idle;
+			counterInvulnerable = 60;
+		}
 	}
 
 		

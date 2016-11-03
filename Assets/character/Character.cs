@@ -55,10 +55,10 @@ public class Character : MonoBehaviour {
 
 		if (other != null) {
 			if ( other.transform.position.x > position.x )  {
-				position.x = other.transform.position.x - other.bounds.extents.x - col.size.x / 2f -.01f;
+				position.x = other.transform.position.x - other.bounds.extents.x - col.size.x / 2f -.05f;
 				velocity.x = 0;
 			} else {
-				position.x = other.transform.position.x + other.bounds.extents.x + col.size.x / 2f +.01f;
+				position.x = other.transform.position.x + other.bounds.extents.x + col.size.x / 2f +.05f;
 				velocity.x = 0;
 			}
 		}
