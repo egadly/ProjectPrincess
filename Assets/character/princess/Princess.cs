@@ -8,8 +8,9 @@ public class Princess: Character{
 	public PrincessStates nextState;
 	public int counterState;
 
-	public int counterShake;
+	public int keys;
 
+	public int counterShake;
 	public int counterInvulnerable;
 
 	public Collider2D col;
@@ -18,6 +19,9 @@ public class Princess: Character{
 
 	// Use this for initialization
 	void Start () {
+
+
+		health = 3;
 		position = transform.position;
 
 		gravity = 0.0125f;
@@ -88,7 +92,7 @@ public class Princess: Character{
 		if (counterShake == 0)
 			transform.position = position;
 		else
-			transform.position = Utilities.Vec3 (position.x + Random.Range (-0.1f, 0.1f), position.y + Random.Range (-0.1f, 0.1f), position.z); 
+			transform.position = Utilities.Vec3 (position.x + Random.Range (-.1f, .1f), position.y + Random.Range (-.1f, .1f), position.z); 
 	
 	}
 
@@ -97,6 +101,7 @@ public class Princess: Character{
 		if (counterInvulnerable == 0) {
 			Collider2D other = ifCollision (1 << LayerMask.NameToLayer ("Enemies"));
 			if (other != null) {
+				health -= other.gameObject.GetComponent<Enemy> ().collisionDamage;
 				if (other.gameObject.transform.position.x >= position.x)
 					velocity.x = -0.1f;
 				else

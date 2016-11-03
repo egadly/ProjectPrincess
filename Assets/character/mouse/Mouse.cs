@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Mouse : Character {
+public class Mouse : Enemy {
 
 	public enum MouseStates { Idle, Run, Fall };
 	public MouseStates currentState;

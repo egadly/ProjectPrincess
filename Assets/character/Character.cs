@@ -3,6 +3,8 @@ using System.Collections;
 
 public class Character : MonoBehaviour {
 
+	public int health;
+
 	protected Vector3 position;
 	public Vector3 velocity;
 	protected Collider2D platformAbove;
