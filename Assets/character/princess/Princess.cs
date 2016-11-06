@@ -3,22 +3,22 @@ using System.Collections;
 
 public class Princess: Character{
 
-	public enum PrincessStates { Idle, Run, Jump, Fall, Crouch, Land, Brace, WallJump, Hitstun };
+	public enum PrincessStates { Idle, Run, Jump, Fall, Crouch, Land, Brace, WallJump, Hitstun, Reel, Rise };
 	public PrincessStates currentState;
 	public PrincessStates nextState;
 	public int counterState;
 
 	public int keys;
 
+	public Vector3 startPosition;
+
 	public int counterShake;
 	public int counterInvulnerable;
 
-	public Collider2D col;
-
-	public bool rightDir;
-
 	// Use this for initialization
 	void Start () {
+
+		startPosition = transform.position;
 
 
 		health = 3;
@@ -32,24 +32,32 @@ public class Princess: Character{
 		rightDir = true;
 		spriteRenderer = gameObject.GetComponent<SpriteRenderer> ();
 		rigidBody = gameObject.GetComponent<Rigidbody2D> ();
-		/*Application.targetFrameRate = 5;
-		QualitySettings.vSyncCount = 0;*/
+		Application.targetFrameRate = 60;
+		QualitySettings.vSyncCount = 0;
 
 	}
-	
+
+
 	// Update is called once per frame
 	void Update () {
 
 		rigidBody.WakeUp ();
-		
+
+		if (Input.GetKeyDown (KeyCode.Q))
+			position = startPosition;
+
 		if (currentState == nextState)
 			counterState++;
 		else {
 			counterState = 0;
 			currentState = nextState;
 		}
+
 		counterInvulnerable = Mathf.Max (--counterInvulnerable, 0);
+		counterShake = Mathf.Max (--counterShake, 0);
+
 		gameObject.GetComponent<Animator> ().SetInteger ("State", (int)currentState);
+
 
 		switch (currentState) {
 		case PrincessStates.Idle:
@@ -79,36 +87,88 @@ public class Princess: Character{
 		case PrincessStates.Hitstun:
 			stateHitstun ();
 			break;
+		case PrincessStates.Reel:
+			stateReel ();
+			break;
+		case PrincessStates.Rise:
+			stateRise ();
+			break;
 		}
 
-
-		//col = ifCollision (1 << LayerMask.NameToLayer ("Enemies"));
+		collectCollisionCheck ();
+		if ( currentState != PrincessStates.Hitstun && currentState != PrincessStates.Reel && currentState != PrincessStates.Rise) {
+			enemyCollisionCheck ();
+			hazardCollisionCheck ();
+		}
 
 		if (counterInvulnerable!=0)
-			spriteRenderer.color = Color.red;
+			spriteRenderer.color = new Color( 1f, 1f, 1f, .5f);
 		else
 			spriteRenderer.color = Color.white;
 		spriteRenderer.flipX = !rightDir;
 		if (counterShake == 0)
 			transform.position = position;
 		else
-			transform.position = Utilities.Vec3 (position.x + Random.Range (-.1f, .1f), position.y + Random.Range (-.1f, .1f), position.z); 
-	
+			transform.position = Utilities.Vec3 (position.x + Random.Range (-.25f, .25f), position.y + Random.Range (-.25f, .25f), position.z); 
+
 	}
 
 	//Begin Common Functions
 	void enemyCollisionCheck() {
 		if (counterInvulnerable == 0) {
+			
 			Collider2D other = ifCollision (1 << LayerMask.NameToLayer ("Enemies"));
 			if (other != null) {
 				health -= other.gameObject.GetComponent<Enemy> ().collisionDamage;
-				if (other.gameObject.transform.position.x >= position.x)
+				if (other.gameObject.transform.position.x >= position.x) {
+					rightDir = true;
 					velocity.x = -0.1f;
-				else
+				} else {
+					rightDir = false;
 					velocity.x = 0.1f;
-				velocity.y = 0;
-				nextState = PrincessStates.Hitstun;
+				}
+				if (platformBelow) {
+					velocity.y = 0;
+					nextState = PrincessStates.Hitstun;
+				}
+				else {
+					velocity.y = 0.1f;
+					nextState = PrincessStates.Reel;
+				}
 			}
+		}
+	}
+
+	void hazardCollisionCheck() {
+		if (counterInvulnerable == 0) {
+			Collider2D other = ifCollision (1 << LayerMask.NameToLayer ("Hazards"));
+			if (other != null) {
+				health -= 1;
+				if (rightDir) {
+					velocity.x = -0.1f;
+				} else {
+					velocity.x = 0.1f;
+				}
+				velocity.y = 0.1f;
+				nextState = PrincessStates.Reel;
+			}
+		}
+	}
+
+	void collectCollisionCheck() {
+		Collider2D other = ifCollision (1 << LayerMask.NameToLayer ("Collects"));
+		if (other != null) {
+			switch (other.gameObject.tag) {
+			case "Key":
+				keys++;
+				break;
+			case "Heart":
+				health++;
+				break;
+			default:
+				break;
+			}
+			Destroy (other.gameObject);
 		}
 	}
 
@@ -129,7 +189,7 @@ public class Princess: Character{
 			rightDir = Input.GetKey (KeyCode.D);
 			nextState = PrincessStates.Run;
 		}
-		enemyCollisionCheck ();
+
 	}
 
 	void stateRun() {
@@ -155,7 +215,7 @@ public class Princess: Character{
 			}
 		if (!platformBelow)
 			nextState = PrincessStates.Fall;
-		enemyCollisionCheck ();
+
 				
 	}
 
@@ -171,17 +231,20 @@ public class Princess: Character{
 		}
 
 		if (Input.GetKey (KeyCode.D))
-			velocity.x += 0.003125f;
+			velocity.x += 0.00625f;
 		if (Input.GetKey (KeyCode.A))
-			velocity.x -= 0.003125f;
+			velocity.x -= 0.00625f;
 
-		if (Input.GetKeyDown( KeyCode.J ) && ((platformRight)||(platformLeft)) ){
-			nextState = PrincessStates.Brace;
+		if (Input.GetKeyDown( KeyCode.J ) ){
+			if (((platformRight) || (platformLeft)))
+				nextState = PrincessStates.Brace;
 		}
 
 		physAdjust ();
+
 		if (velocity.y <= 0)
 			nextState = PrincessStates.Fall;
+
 	}
 
 	void stateFall() {
@@ -189,9 +252,9 @@ public class Princess: Character{
 		velocity.y -= gravity;
 
 		if (Input.GetKey (KeyCode.D))
-			velocity.x += 0.003125f;
+			velocity.x += 0.00625f;
 		if (Input.GetKey (KeyCode.A))
-			velocity.x -= 0.003125f;
+			velocity.x -= 0.00625f;
 
 		if (Input.GetKeyDown( KeyCode.J ) && ((platformRight)||(platformLeft)) ){
 			nextState = PrincessStates.Brace;
@@ -200,6 +263,7 @@ public class Princess: Character{
 		physAdjust ();
 
 		if (platformBelow) nextState = PrincessStates.Land; 
+
 	}
 
 	void stateCrouch() {
@@ -211,7 +275,6 @@ public class Princess: Character{
 		}
 		if (!platformBelow)
 			nextState = PrincessStates.Jump;
-		enemyCollisionCheck ();
 	}
 
 	void stateLand() {
@@ -225,7 +288,7 @@ public class Princess: Character{
 
 		if (counterState == 5)
 			nextState = PrincessStates.Idle;
-		enemyCollisionCheck ();
+
 	}
 
 	void stateBrace() {
@@ -236,13 +299,6 @@ public class Princess: Character{
 		if (counterState == 6) {
 			velocity.y = maxVspeed;
 			nextState = PrincessStates.WallJump;
-		}
-	}
-
-	void stateWallJump() {
-
-		if (counterState == 0) {
-			velocity.y = 0.4f;
 			if (platformRight) {
 				rightDir = false;
 				velocity.x = -0.1f;
@@ -250,6 +306,13 @@ public class Princess: Character{
 				rightDir = true;
 				velocity.x = 0.1f;
 			}
+		}
+	}
+
+	void stateWallJump() {
+
+		if (counterState == 0) {
+			velocity.y = 0.2f;
 		}
 
 		velocity.y -= gravity;
@@ -271,20 +334,61 @@ public class Princess: Character{
 
 	void stateHitstun() {
 
-		counterInvulnerable = 1;
-
 		if (counterState > 6) {
 			physAdjust ();
 			counterShake = 0;
-		}
-		else
+		} else
 			counterShake = 1;
 
 		if (counterState == 15) {
 			nextState = PrincessStates.Idle;
 			counterInvulnerable = 60;
 		}
+		if (!platformBelow) {
+			nextState = PrincessStates.Fall;
+			counterInvulnerable = 60;
+		}
 	}
 
+	void stateReel() {
+		
+		if (counterState > 6) {
+			velocity.y -= gravity;
+			physAdjust ();
+			counterShake = 0;
+		}
+		else
+			counterShake = 1;
+
+		if (Input.GetKey (KeyCode.D))
+			velocity.x += 0.00625f;
+		if (Input.GetKey (KeyCode.A))
+			velocity.x -= 0.00625f;
+
+		if (counterState == 107) {
+			nextState = PrincessStates.Fall;
+			counterInvulnerable = 60;
+		}
+		if (counterState > 6 && platformBelow && velocity.y <= 0) {
+			nextState = PrincessStates.Rise;
+		}
+
+	}
+
+	void stateRise() {
+
+		if (counterState > 5) {
+			if (velocity.x > 0)
+				velocity.x = Mathf.Max (velocity.x - .0125f, 0f);
+			if (velocity.x < 0)
+				velocity.x = Mathf.Min (velocity.x + .0125f, 0f);
+		}
+		physAdjust ();
+
+		if (counterState == 22 ) {
+			nextState = PrincessStates.Idle;
+			counterInvulnerable = 60;
+		}
+	}
 		
 }

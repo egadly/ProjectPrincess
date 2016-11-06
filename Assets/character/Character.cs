@@ -16,6 +16,8 @@ public class Character : MonoBehaviour {
 	protected float maxVspeed;
 	protected float maxHspeed;
 
+	public bool rightDir;
+
 	public SpriteRenderer spriteRenderer;
 	public Rigidbody2D rigidBody;
 
@@ -107,8 +109,8 @@ public class Character : MonoBehaviour {
 		BoxCollider2D col = gameObject.GetComponent<BoxCollider2D> ();
 
 		return Physics2D.OverlapArea (
-			Utilities.Vec2 (position.x - col.size.x / 2f, position.y - col.size.y / 2f + col.offset.y),
-			Utilities.Vec2 (position.x + col.size.y / 2f, position.y - col.size.y / 2f + col.offset.y), mask);
+			Utilities.Vec2 (position.x - col.size.x / 2f, position.y + col.size.y / 2f + col.offset.y),
+			Utilities.Vec2 (position.x + col.size.x / 2f, position.y - col.size.y / 2f + col.offset.y), mask);
 	}
 
 }

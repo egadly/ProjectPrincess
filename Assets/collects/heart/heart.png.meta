@@ -1,13 +1,13 @@
 fileFormatVersion: 2
-guid: 09b3c4d5906fa9648b100abbfa57c243
-timeCreated: 1477212541
+guid: cb00cf16b9e23ad49bfb851d1509ff82
+timeCreated: 1478396368
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
-    21300000: platform_brick_0
-    21300002: platform_brick_1
-    21300004: platform_brick_2
-    21300006: platform_brick_3
+    21300000: heart_0
+    21300002: heart_1
+    21300004: heart_2
+    21300006: heart_3
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -52,12 +52,17 @@ TextureImporter:
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
   textureType: 8
-  buildTargetSettings: []
+  buildTargetSettings:
+  - buildTarget: Standalone
+    maxTextureSize: 2048
+    textureFormat: -3
+    compressionQuality: 50
+    allowsAlphaSplitting: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: platform_brick_0
+      name: heart_0
       rect:
         serializedVersion: 2
         x: 0
@@ -70,10 +75,10 @@ TextureImporter:
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: platform_brick_1
+      name: heart_1
       rect:
         serializedVersion: 2
-        x: 20
+        x: 21
         y: 0
         width: 20
         height: 20
@@ -83,10 +88,10 @@ TextureImporter:
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: platform_brick_2
+      name: heart_2
       rect:
         serializedVersion: 2
-        x: 40
+        x: 42
         y: 0
         width: 20
         height: 20
@@ -96,10 +101,10 @@ TextureImporter:
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: platform_brick_3
+      name: heart_3
       rect:
         serializedVersion: 2
-        x: 60
+        x: 63
         y: 0
         width: 20
         height: 20

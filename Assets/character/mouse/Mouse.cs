@@ -9,9 +9,6 @@ public class Mouse : Enemy {
 	public int counterState;
 	public int stateLength;
 
-	public bool rightDir;
-
-
 	// Use this for initialization
 	void Start () {
 
@@ -25,6 +22,7 @@ public class Mouse : Enemy {
 		spriteRenderer = gameObject.GetComponent<SpriteRenderer> ();
 
 		currentState = MouseStates.Idle;
+		stateLength = (int)Random.Range (15, 60);
 
 	
 	}
@@ -39,7 +37,7 @@ public class Mouse : Enemy {
 			currentState = nextState;
 		}
 
-		if ( counterState == 0) stateLength = (int)Random.Range (15, 60);
+		if ( counterState == 0 ) stateLength = (int)Random.Range (15, 60);
 
 		gameObject.GetComponent<Animator> ().SetInteger ("State", (int)currentState);
 
