@@ -97,7 +97,7 @@ public class Character : MonoBehaviour {
 			Utilities.Vec2 (position.x + col.size.x / 2f + 0.05f, position.y - col.size.y / 4f + col.offset.y), platforms);
 		platformLeft= Physics2D.OverlapArea (
 			Utilities.Vec2 (position.x - col.size.x / 2f - 0.05f, position.y + col.size.y / 4f + col.offset.y),
-			Utilities.Vec2 (position.x - col.size.x / 2f, position.y - col.size.y / 4f + col.offset.y), platforms);
+			Utilities.Vec2 (position.x - col.size.x / 2f,         position.y - col.size.y / 4f + col.offset.y), platforms);
 		platformAbove = Physics2D.OverlapArea (
 			Utilities.Vec2 (position.x - col.size.x / 4f, position.y + col.size.y / 2f + col.offset.y + 0.05f),
 			Utilities.Vec2 (position.x + col.size.x / 4f, position.y + col.size.y / 2f + col.offset.y), platforms);

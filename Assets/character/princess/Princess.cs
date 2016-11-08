@@ -3,21 +3,22 @@ using System.Collections;
 
 public class Princess: Character{
 
-	public enum PrincessStates { Idle, Run, Jump, Fall, Crouch, Land, Brace, WallJump, Hitstun, Reel, Rise };
+	public enum PrincessStates { Idle, Run, Jump, Fall, Crouch, Land, Brace, WallJump, Hitstun, Reel, Rise, Pirouette};
 	public PrincessStates currentState;
 	public PrincessStates nextState;
 	public int counterState;
 
 	public int keys;
 
-	public Vector3 startPosition;
+	private Vector3 startPosition;
 
-	public int counterShake;
-	public int counterInvulnerable;
+	private int counterShake;
+	private int counterInvulnerable;
+
+	public Object hitbox;
 
 	// Use this for initialization
 	void Start () {
-
 		startPosition = transform.position;
 
 
@@ -51,6 +52,8 @@ public class Princess: Character{
 		else {
 			counterState = 0;
 			currentState = nextState;
+			gameObject.GetComponent<Animator> ().speed = 1;
+			destroyChildren ();
 		}
 
 		counterInvulnerable = Mathf.Max (--counterInvulnerable, 0);
@@ -92,6 +95,9 @@ public class Princess: Character{
 			break;
 		case PrincessStates.Rise:
 			stateRise ();
+			break;
+		case PrincessStates.Pirouette:
+			statePirouette ();
 			break;
 		}
 
@@ -189,6 +195,9 @@ public class Princess: Character{
 			rightDir = Input.GetKey (KeyCode.D);
 			nextState = PrincessStates.Run;
 		}
+		if (Input.GetKey (KeyCode.K)) {
+			nextState = PrincessStates.Pirouette;
+		}
 
 	}
 
@@ -245,6 +254,10 @@ public class Princess: Character{
 		if (velocity.y <= 0)
 			nextState = PrincessStates.Fall;
 
+		if (Input.GetKey (KeyCode.K)) {
+			nextState = PrincessStates.Pirouette;
+		}
+
 	}
 
 	void stateFall() {
@@ -263,6 +276,11 @@ public class Princess: Character{
 		physAdjust ();
 
 		if (platformBelow) nextState = PrincessStates.Land; 
+
+		if (Input.GetKey (KeyCode.K)) {
+			nextState = PrincessStates.Pirouette;
+		}
+
 
 	}
 
@@ -322,11 +340,15 @@ public class Princess: Character{
 		if (Input.GetKey (KeyCode.A))
 			velocity.x -= 0.003125f;
 
+		physAdjust ();
+
 		if (Input.GetKeyDown( KeyCode.J ) && ((platformRight)||(platformLeft)) ){
 			nextState = PrincessStates.Brace;
 		}
+		if (Input.GetKey (KeyCode.K)) {
+			nextState = PrincessStates.Pirouette;
+		}
 
-		physAdjust ();
 		if (velocity.y <= 0)
 			nextState = PrincessStates.Fall;
 		
@@ -353,12 +375,14 @@ public class Princess: Character{
 	void stateReel() {
 		
 		if (counterState > 6) {
+			gameObject.GetComponent<Animator> ().speed = 1;
 			velocity.y -= gravity;
 			physAdjust ();
 			counterShake = 0;
-		}
-		else
+		} else {
+			gameObject.GetComponent<Animator> ().speed = 0;
 			counterShake = 1;
+		}
 
 		if (Input.GetKey (KeyCode.D))
 			velocity.x += 0.00625f;
@@ -388,6 +412,50 @@ public class Princess: Character{
 		if (counterState == 22 ) {
 			nextState = PrincessStates.Idle;
 			counterInvulnerable = 60;
+		}
+	}
+
+	void statePirouette () {
+		
+		if (counterState == 0) {
+			Instantiate ( hitbox, transform);
+			velocity.y = 0;
+		}
+		if (counterState > 46) {
+			destroyChildren ();
+			velocity.y -= gravity;
+		}
+
+		if (Input.GetKey (KeyCode.D))
+			velocity.x += 0.00625f;
+		if (Input.GetKey (KeyCode.A))
+			velocity.x -= 0.00625f;
+
+		if (Input.GetKeyDown (KeyCode.K))
+			velocity.y += gravity;
+
+		if (!platformBelow) velocity.y -= gravity /2f;
+
+		physAdjust ();
+
+		if (platformBelow && velocity.y < 0) {
+			
+			nextState = PrincessStates.Land;
+		}
+
+		if (counterState == 51) {
+			if (!platformBelow)
+				nextState = PrincessStates.Fall;
+			else
+				nextState = PrincessStates.Land;
+		}
+	
+	}
+
+	void destroyChildren() {
+		Object[] children = GameObject.FindGameObjectsWithTag ("PlayerHitbox");
+		for (int i = 0; i < children.GetLength(0) ; i++) {
+			Destroy (children [i]);
 		}
 	}
 		

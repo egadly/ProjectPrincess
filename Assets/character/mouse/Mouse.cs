@@ -53,6 +53,9 @@ public class Mouse : Enemy {
 			break;
 		}
 
+		//Test Hits
+		if ( ifCollision( 1 << LayerMask.NameToLayer( "PlayerHitboxes" ) ) ) Destroy( this.gameObject );
+
 		spriteRenderer.flipX = !rightDir;
 		transform.position = position;
 	
