@@ -102,7 +102,7 @@ public class Princess: Character{
 		}
 
 		collectCollisionCheck ();
-		if ( currentState != PrincessStates.Hitstun && currentState != PrincessStates.Reel && currentState != PrincessStates.Rise) {
+		if ( currentState != PrincessStates.Hitstun && currentState != PrincessStates.Reel && currentState != PrincessStates.Rise && currentState != PrincessStates.Pirouette ) {
 			enemyCollisionCheck ();
 			hazardCollisionCheck ();
 		}
@@ -416,7 +416,7 @@ public class Princess: Character{
 	}
 
 	void statePirouette () {
-		
+
 		if (counterState == 0) {
 			Instantiate ( hitbox, transform);
 			velocity.y = 0;
@@ -424,6 +424,7 @@ public class Princess: Character{
 		if (counterState > 46) {
 			destroyChildren ();
 			velocity.y -= gravity;
+			enemyCollisionCheck ();
 		}
 
 		if (Input.GetKey (KeyCode.D))
@@ -434,14 +435,11 @@ public class Princess: Character{
 		if (Input.GetKeyDown (KeyCode.K))
 			velocity.y += gravity;
 
-		if (!platformBelow) velocity.y -= gravity /2f;
+		if (!platformBelow) velocity.y -= gravity /8f;
 
 		physAdjust ();
 
-		if (platformBelow && velocity.y < 0) {
-			
-			nextState = PrincessStates.Land;
-		}
+		hazardCollisionCheck ();
 
 		if (counterState == 51) {
 			if (!platformBelow)
