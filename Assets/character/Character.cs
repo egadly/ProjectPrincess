@@ -53,8 +53,8 @@ public class Character : MonoBehaviour {
 
 	protected void physAdjustHor( BoxCollider2D col, LayerMask platforms ) {
 
-		Vector2 topLeft = Utilities.Vec2 (position.x - col.size.x / 2f, position.y + col.size.y / 4f);
-		Vector2 botRight = Utilities.Vec2 (position.x + col.size.x / 2f, position.y - col.size.y / 4f);
+		Vector2 topLeft = new Vector2 (position.x - col.size.x / 2f, position.y + col.size.y / 4f);
+		Vector2 botRight = new Vector2 (position.x + col.size.x / 2f, position.y - col.size.y / 4f);
 
 		Collider2D other = null;
 		other = Physics2D.OverlapArea (topLeft, botRight, platforms);
@@ -72,8 +72,8 @@ public class Character : MonoBehaviour {
 	}
 	protected void physAdjustVert( BoxCollider2D col, LayerMask platforms ) {
 
-		Vector2 topLeft = Utilities.Vec2 (position.x - col.size.x / 4f, position.y + col.size.y / 2f);
-		Vector2 botRight = Utilities.Vec2 (position.x + col.size.x / 4f, position.y - col.size.y /2f);
+		Vector2 topLeft = new Vector2 (position.x - col.size.x / 4f, position.y + col.size.y / 2f);
+		Vector2 botRight = new Vector2 (position.x + col.size.x / 4f, position.y - col.size.y /2f);
 
 		Collider2D other = null;
 		other = Physics2D.OverlapArea (topLeft, botRight, platforms);
@@ -92,17 +92,17 @@ public class Character : MonoBehaviour {
 	protected void adjacentPlatformCheck( BoxCollider2D col, LayerMask platforms ) {
 
 		platformBelow = Physics2D.OverlapArea (
-			Utilities.Vec2 (position.x - col.size.x / 4f, position.y - col.size.y / 2f + col.offset.y),
-			Utilities.Vec2 (position.x + col.size.x / 4f, position.y - col.size.y / 2f + col.offset.y- 0.05f), platforms);
+			new Vector2 (position.x - col.size.x / 4f, position.y - col.size.y / 2f + col.offset.y),
+			new Vector2 (position.x + col.size.x / 4f, position.y - col.size.y / 2f + col.offset.y- 0.05f), platforms);
 		platformRight= Physics2D.OverlapArea (
-			Utilities.Vec2 (position.x + col.size.x / 2f,         position.y + col.size.y / 4f + col.offset.y),
-			Utilities.Vec2 (position.x + col.size.x / 2f + 0.05f, position.y - col.size.y / 4f + col.offset.y), platforms);
+			new Vector2 (position.x + col.size.x / 2f,         position.y + col.size.y / 4f + col.offset.y),
+			new Vector2 (position.x + col.size.x / 2f + 0.05f, position.y - col.size.y / 4f + col.offset.y), platforms);
 		platformLeft= Physics2D.OverlapArea (
-			Utilities.Vec2 (position.x - col.size.x / 2f - 0.05f, position.y + col.size.y / 4f + col.offset.y),
-			Utilities.Vec2 (position.x - col.size.x / 2f,         position.y - col.size.y / 4f + col.offset.y), platforms);
+			new Vector2 (position.x - col.size.x / 2f - 0.05f, position.y + col.size.y / 4f + col.offset.y),
+			new Vector2 (position.x - col.size.x / 2f,         position.y - col.size.y / 4f + col.offset.y), platforms);
 		platformAbove = Physics2D.OverlapArea (
-			Utilities.Vec2 (position.x - col.size.x / 4f, position.y + col.size.y / 2f + col.offset.y + 0.05f),
-			Utilities.Vec2 (position.x + col.size.x / 4f, position.y + col.size.y / 2f + col.offset.y), platforms);
+			new Vector2 (position.x - col.size.x / 4f, position.y + col.size.y / 2f + col.offset.y + 0.05f),
+			new Vector2 (position.x + col.size.x / 4f, position.y + col.size.y / 2f + col.offset.y), platforms);
 		
 	}
 
@@ -111,8 +111,8 @@ public class Character : MonoBehaviour {
 		BoxCollider2D col = gameObject.GetComponent<BoxCollider2D> ();
 
 		return Physics2D.OverlapArea (
-			Utilities.Vec2 (position.x - col.size.x / 2f, position.y + col.size.y / 2f + col.offset.y),
-			Utilities.Vec2 (position.x + col.size.x / 2f, position.y - col.size.y / 2f + col.offset.y), mask);
+			new Vector2 (position.x - col.size.x / 2f, position.y + col.size.y / 2f + col.offset.y),
+			new Vector2 (position.x + col.size.x / 2f, position.y - col.size.y / 2f + col.offset.y), mask);
 	}
 
 	protected void applyFriction( Collider2D platform ) {
@@ -137,6 +137,7 @@ public class Character : MonoBehaviour {
 		} else
 			velocity.x += direction * aerialDrift;
 	}
+
 
 
 }

@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Princess: Character{
 
-	public enum PrincessStates { Idle, Run, Jump, Fall, Crouch, Land, Brace, WallJump, Hitstun, Reel, Rise, Pirouette, Spinend, Death };
+	public enum PrincessStates { Idle, Run, Jump, Fall, Crouch, Land, Brace, WallJump, Hitstun, Reel, Rise, Pirouette, Spinend, Dive, Death };
 	public PrincessStates currentState;
 	public PrincessStates nextState;
 	public int counterState;
@@ -31,7 +31,7 @@ public class Princess: Character{
 		runAcceleration = 0.025f;
 
 		gravity = 0.0125f;
-		maxVspeed = .2f;
+		maxVspeed = .16f;
 		maxHspeed = .1f;
 
 		currentState = PrincessStates.Idle;
@@ -107,6 +107,9 @@ public class Princess: Character{
 		case PrincessStates.Spinend:
 			stateSpinend ();
 			break;
+		case PrincessStates.Dive:
+			stateDive ();
+			break;
 		case PrincessStates.Death:
 			stateDeath ();
 			break;
@@ -126,7 +129,7 @@ public class Princess: Character{
 		if (counterShake == 0)
 			transform.position = position;
 		else
-			transform.position = Utilities.Vec3 (position.x + Random.Range (-.25f, .25f), position.y + Random.Range (-.25f, .25f), position.z); 
+			transform.position = new Vector3(position.x + Random.Range (-.25f, .25f), position.y + Random.Range (-.25f, .25f), position.z); 
 
 	}
 
@@ -200,39 +203,43 @@ public class Princess: Character{
 		physAdjust ();
 		if (!platformBelow)
 			nextState = PrincessStates.Fall;
-		if (Input.GetKey (KeyCode.J))
-			nextState = PrincessStates.Crouch;
-		if (Input.GetKey (KeyCode.D) || Input.GetKey (KeyCode.A)) {
-			rightDir = Input.GetKey (KeyCode.D);
+		if ( VirtualInput.leftDown || VirtualInput.rightDown ) {
 			nextState = PrincessStates.Run;
 		}
-		if (Input.GetKeyDown (KeyCode.K)) {
+		if ( VirtualInput.kickPos )
 			nextState = PrincessStates.Pirouette;
-		}
+		if ( VirtualInput.jumpPos )
+			nextState = PrincessStates.Crouch;
+		if (Input.GetKeyDown (KeyCode.L))
+			nextState = PrincessStates.Dive;
 
 	}
 
 	void stateRun() {
-
-		if (Input.GetKey (KeyCode.D))
+		if ( VirtualInput.leftDown && VirtualInput.rightDown ) {
+			if (velocity.x > 0)
+				rightDir = true;
+			if (velocity.x < 0)
+				rightDir = false;
+		} else if ( VirtualInput.rightDown ) {
 			applyAcceleration (platformBelow, true);
-		if (Input.GetKey (KeyCode.A))
+			rightDir = true;
+		} else if ( VirtualInput.leftDown ) {
 			applyAcceleration (platformBelow, false);
-
-		if (velocity.x>0) rightDir = true;
-		if (velocity.x<0) rightDir = false;
-
-		velocity.x = Mathf.Min( maxHspeed, velocity.x );
-		velocity.x = Mathf.Max( -maxHspeed, velocity.x );
-
+			rightDir = false;
+		}
 		
 		physAdjust ();
-		if (!Input.GetKey (KeyCode.D)&&!Input.GetKey (KeyCode.A)) {
+		if ( !VirtualInput.rightDown && !VirtualInput.leftDown ) {
 			nextState = PrincessStates.Idle;
-		} else
-		if (Input.GetKeyDown(KeyCode.J) ){
+		}
+		if ( VirtualInput.kickPos ) {
+			nextState = PrincessStates.Pirouette;
+		}
+		if ( VirtualInput.jumpPos ){
 			nextState = PrincessStates.Crouch;
-			}
+		}
+
 		if (!platformBelow)
 			nextState = PrincessStates.Fall;
 
@@ -241,33 +248,30 @@ public class Princess: Character{
 
 	void stateJump() {
 
-		if (counterState <= 5 && Input.GetKey (KeyCode.J))
+		if (counterState <= 9 && VirtualInput.jumpDown )
 			velocity.y = maxVspeed;
 		else {
-			if (Input.GetKeyUp (KeyCode.J)) {
+			if ( VirtualInput.jumpNeg ) {
 				counterState = 11;
 			}
 			velocity.y -= gravity;
 		}
 
-		if (Input.GetKey (KeyCode.D))
+		if ( VirtualInput.rightDown )
 			applyAcceleration (platformBelow, true);
-		if (Input.GetKey (KeyCode.A))
+		if ( VirtualInput.leftDown )
 			applyAcceleration (platformBelow, false);
-
-		if (Input.GetKeyDown( KeyCode.J ) ){
-			if (((platformRight) || (platformLeft)))
-				nextState = PrincessStates.Brace;
-		}
 
 		physAdjust ();
 
 		if (velocity.y <= 0)
 			nextState = PrincessStates.Fall;
 
-		if (Input.GetKey (KeyCode.K)) {
+		if ( VirtualInput.kickPos ) 
 			nextState = PrincessStates.Pirouette;
-		}
+
+		if ( VirtualInput.jumpPos && ((platformRight)||(platformLeft)) )
+			nextState = PrincessStates.Brace;
 
 	}
 
@@ -275,22 +279,20 @@ public class Princess: Character{
 
 		velocity.y -= gravity;
 
-		if (Input.GetKey (KeyCode.D))
+		if ( VirtualInput.rightDown )
 			applyAcceleration (platformBelow, true);
-		if (Input.GetKey (KeyCode.A))
+		if ( VirtualInput.leftDown )
 			applyAcceleration (platformBelow, false);
-
-		if (Input.GetKeyDown( KeyCode.J ) && ((platformRight)||(platformLeft)) ){
-			nextState = PrincessStates.Brace;
-		}
 		
 		physAdjust ();
 
-		if (platformBelow) nextState = PrincessStates.Land; 
-
-		if (Input.GetKey (KeyCode.K)) {
+		if ( VirtualInput.kickPos )
 			nextState = PrincessStates.Pirouette;
-		}
+
+		if ( VirtualInput.jumpPos && ((platformRight)||(platformLeft)) )
+			nextState = PrincessStates.Brace;
+
+		if (platformBelow) nextState = PrincessStates.Land; 
 
 
 	}
@@ -343,19 +345,18 @@ public class Princess: Character{
 
 		velocity.y -= gravity;
 
-		if (Input.GetKey (KeyCode.D))
+		if ( VirtualInput.rightDown)
 			applyAcceleration (platformBelow, true);
-		if (Input.GetKey (KeyCode.A))
+		if ( VirtualInput.leftDown)
 			applyAcceleration (platformBelow, false);
 
 		physAdjust ();
 
-		if (Input.GetKeyDown( KeyCode.J ) && ((platformRight)||(platformLeft)) ){
-			nextState = PrincessStates.Brace;
-		}
-		if (Input.GetKey (KeyCode.K)) {
+		if ( VirtualInput.kickPos )
 			nextState = PrincessStates.Pirouette;
-		}
+
+		if (VirtualInput.jumpPos && ((platformRight)||(platformLeft)) )
+			nextState = PrincessStates.Brace;
 
 		if (velocity.y <= 0)
 			nextState = PrincessStates.Fall;
@@ -392,10 +393,10 @@ public class Princess: Character{
 			counterShake = 1;
 		}
 
-		if (Input.GetKey (KeyCode.D))
-			velocity.x += 0.00625f;
-		if (Input.GetKey (KeyCode.A))
-			velocity.x -= 0.00625f;
+		if ( VirtualInput.rightDown )
+			applyAcceleration (null, true);
+		if ( VirtualInput.leftDown )
+			applyAcceleration (null, false);
 
 		if (counterState == 107) {
 			nextState = PrincessStates.Fall;
@@ -429,12 +430,12 @@ public class Princess: Character{
 			velocity.y = Mathf.Min (velocity.y/2f, 0);
 		}
 
-		if (Input.GetKey (KeyCode.D))
-			applyAcceleration (null, true );
-		if (Input.GetKey (KeyCode.A))
-			applyAcceleration (null, false);
+		if ( VirtualInput.rightDown )
+			applyAcceleration (platformBelow, true );
+		if ( VirtualInput.leftDown )
+			applyAcceleration (platformBelow, false);
 
-		if (counterState > 5 && counterState < 48 && Input.GetKeyDown (KeyCode.K))
+		if (counterState > 5 && counterState < 48 && VirtualInput.kickPos )
 			velocity.y += gravity;
 
 		if (!platformBelow) velocity.y -= gravity /8f;
@@ -443,12 +444,8 @@ public class Princess: Character{
 
 		hazardCollisionCheck ();
 
-		if (platformBelow && velocity.y < 0f)
+		if ( (platformBelow && velocity.y < 0f ) || counterState == 42 )
 			nextState = PrincessStates.Spinend;
-
-		if (counterState == 42) {
-			nextState = PrincessStates.Spinend;
-		}
 	
 	}
 
@@ -464,6 +461,32 @@ public class Princess: Character{
 		if (counterState == 12) {
 			if (platformBelow)
 				nextState = PrincessStates.Land;
+			else
+				nextState = PrincessStates.Fall;
+		}
+	}
+	void stateDive() {
+
+		int direction = 1;
+		if (!rightDir)
+			direction *= -1;
+
+		if (counterState == 0) {
+			velocity.x = 0;
+			velocity.y = .025f;
+		}
+
+		velocity.x += (.2f * ((16 - counterState) / 16f)*((16 - counterState) / 16f) * direction);
+
+		if (!platformBelow)
+			velocity.y -= gravity;
+
+
+		physAdjust ();
+
+		if (counterState == 15) {
+			if (platformBelow)
+				nextState = PrincessStates.Rise;
 			else
 				nextState = PrincessStates.Fall;
 		}

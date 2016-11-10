@@ -6,6 +6,7 @@ public class Hearts_HUD : MonoBehaviour {
 
 	public int maximumHealth = 10;
 	public int savedHealth = 0;
+	public float scale;
 
 	public Princess princess;
 	public GameObject[] hearts;
@@ -17,12 +18,14 @@ public class Hearts_HUD : MonoBehaviour {
 		princess = GameObject.FindGameObjectWithTag ("Player").GetComponent<Princess> ();
 
 		hearts = new GameObject[maximumHealth];
+		scale = Screen.height / 360;
 
 		for ( int i = 0; i < maximumHealth; i++ ) {
 			//Create the game objects
 			hearts[i] = (GameObject)Instantiate( heart, this.transform );
+			hearts [i].GetComponent<RectTransform> ().localScale = new Vector3(scale, scale, 1f);
 			//Position it in the scene
-			hearts[i].transform.position = new Vector3((i* 90) +50, 40, 0);
+			hearts[i].transform.position = new Vector3((i* ((40*scale)+(10*scale))) + ((20*scale)+(10*scale)), (20*scale), 0);
 		}
 	
 	}

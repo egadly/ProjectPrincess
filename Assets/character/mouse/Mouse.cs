@@ -18,6 +18,8 @@ public class Mouse : Enemy {
 		maxHspeed = 0.1f;
 		maxVspeed = 0.1f;
 
+		runAcceleration = 0.0125f;
+		aerialDrift = 0;
 		rightDir = false;
 		spriteRenderer = gameObject.GetComponent<SpriteRenderer> ();
 
@@ -76,10 +78,7 @@ public class Mouse : Enemy {
 			}
 		}
 
-		if (velocity.x > 0)
-			velocity.x = Mathf.Max (velocity.x - .00625f, 0f);
-		if (velocity.x < 0)
-			velocity.x = Mathf.Min (velocity.x + .00625f, 0f);
+		applyFriction (platformBelow);
 
 		physAdjust ();
 
@@ -90,12 +89,13 @@ public class Mouse : Enemy {
 		if (counterState == stateLength) {
 			nextState = MouseStates.Idle;
 		}
+
+		applyAcceleration (platformBelow, rightDir);
+
 		if (rightDir) {
-			velocity.x += 0.0125f;
 			if (platformRight)
 				nextState = MouseStates.Idle;
 		} else {
-			velocity.x -= 0.0125f;
 			if (platformLeft)
 				nextState = MouseStates.Idle;
 		}
