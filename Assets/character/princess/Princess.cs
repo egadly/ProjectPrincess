@@ -3,10 +3,12 @@ using System.Collections;
 
 public class Princess: Character{
 
-	public enum PrincessStates { Idle, Run, Jump, Fall, Crouch, Land, Brace, WallJump, Hitstun, Reel, Rise, Pirouette};
+	public enum PrincessStates { Idle, Run, Jump, Fall, Crouch, Land, Brace, WallJump, Hitstun, Reel, Rise, Pirouette, Spinend, Death };
 	public PrincessStates currentState;
 	public PrincessStates nextState;
 	public int counterState;
+
+	public int check = (int)PrincessStates.Death;
 
 	public int keys;
 
@@ -24,6 +26,9 @@ public class Princess: Character{
 
 		health = 3;
 		position = transform.position;
+
+		aerialDrift = 0.0046875f;
+		runAcceleration = 0.025f;
 
 		gravity = 0.0125f;
 		maxVspeed = .2f;
@@ -99,10 +104,16 @@ public class Princess: Character{
 		case PrincessStates.Pirouette:
 			statePirouette ();
 			break;
+		case PrincessStates.Spinend:
+			stateSpinend ();
+			break;
+		case PrincessStates.Death:
+			stateDeath ();
+			break;
 		}
 
 		collectCollisionCheck ();
-		if ( currentState != PrincessStates.Hitstun && currentState != PrincessStates.Reel && currentState != PrincessStates.Rise && currentState != PrincessStates.Pirouette ) {
+		if ( currentState != PrincessStates.Hitstun && currentState != PrincessStates.Reel && currentState != PrincessStates.Rise && currentState != PrincessStates.Pirouette && currentState != PrincessStates.Death ) {
 			enemyCollisionCheck ();
 			hazardCollisionCheck ();
 		}
@@ -135,7 +146,10 @@ public class Princess: Character{
 				}
 				if (platformBelow) {
 					velocity.y = 0;
-					nextState = PrincessStates.Hitstun;
+					if (health <= 0)
+						nextState = PrincessStates.Reel;
+					else
+						nextState = PrincessStates.Hitstun;
 				}
 				else {
 					velocity.y = 0.1f;
@@ -181,10 +195,7 @@ public class Princess: Character{
 	//Begin State Functions
 	void stateIdle() {
 		
-		if (velocity.x > 0)
-			velocity.x = Mathf.Max (velocity.x - .0125f, 0f);
-		if (velocity.x < 0)
-			velocity.x = Mathf.Min (velocity.x + .0125f, 0f);
+		applyFriction (platformBelow);
 		
 		physAdjust ();
 		if (!platformBelow)
@@ -195,7 +206,7 @@ public class Princess: Character{
 			rightDir = Input.GetKey (KeyCode.D);
 			nextState = PrincessStates.Run;
 		}
-		if (Input.GetKey (KeyCode.K)) {
+		if (Input.GetKeyDown (KeyCode.K)) {
 			nextState = PrincessStates.Pirouette;
 		}
 
@@ -204,9 +215,9 @@ public class Princess: Character{
 	void stateRun() {
 
 		if (Input.GetKey (KeyCode.D))
-			velocity.x += 0.025f;
+			applyAcceleration (platformBelow, true);
 		if (Input.GetKey (KeyCode.A))
-			velocity.x -= 0.025f;
+			applyAcceleration (platformBelow, false);
 
 		if (velocity.x>0) rightDir = true;
 		if (velocity.x<0) rightDir = false;
@@ -216,7 +227,7 @@ public class Princess: Character{
 
 		
 		physAdjust ();
-		if (Input.GetKeyUp (KeyCode.D)||Input.GetKeyUp (KeyCode.A)) {
+		if (!Input.GetKey (KeyCode.D)&&!Input.GetKey (KeyCode.A)) {
 			nextState = PrincessStates.Idle;
 		} else
 		if (Input.GetKeyDown(KeyCode.J) ){
@@ -240,9 +251,9 @@ public class Princess: Character{
 		}
 
 		if (Input.GetKey (KeyCode.D))
-			velocity.x += 0.00625f;
+			applyAcceleration (platformBelow, true);
 		if (Input.GetKey (KeyCode.A))
-			velocity.x -= 0.00625f;
+			applyAcceleration (platformBelow, false);
 
 		if (Input.GetKeyDown( KeyCode.J ) ){
 			if (((platformRight) || (platformLeft)))
@@ -265,9 +276,9 @@ public class Princess: Character{
 		velocity.y -= gravity;
 
 		if (Input.GetKey (KeyCode.D))
-			velocity.x += 0.00625f;
+			applyAcceleration (platformBelow, true);
 		if (Input.GetKey (KeyCode.A))
-			velocity.x -= 0.00625f;
+			applyAcceleration (platformBelow, false);
 
 		if (Input.GetKeyDown( KeyCode.J ) && ((platformRight)||(platformLeft)) ){
 			nextState = PrincessStates.Brace;
@@ -297,10 +308,7 @@ public class Princess: Character{
 
 	void stateLand() {
 
-		if (velocity.x > 0)
-			velocity.x = Mathf.Max (velocity.x - .0125f, 0f);
-		if (velocity.x < 0)
-			velocity.x = Mathf.Min (velocity.x + .0125f, 0f);
+		applyFriction (platformBelow);
 
 		physAdjust ();
 
@@ -336,9 +344,9 @@ public class Princess: Character{
 		velocity.y -= gravity;
 
 		if (Input.GetKey (KeyCode.D))
-			velocity.x += 0.003125f;
+			applyAcceleration (platformBelow, true);
 		if (Input.GetKey (KeyCode.A))
-			velocity.x -= 0.003125f;
+			applyAcceleration (platformBelow, false);
 
 		physAdjust ();
 
@@ -394,7 +402,9 @@ public class Princess: Character{
 			counterInvulnerable = 60;
 		}
 		if (counterState > 6 && platformBelow && velocity.y <= 0) {
-			nextState = PrincessStates.Rise;
+			if (health <= 0)
+				nextState = PrincessStates.Death;
+			else nextState = PrincessStates.Rise;
 		}
 
 	}
@@ -402,10 +412,7 @@ public class Princess: Character{
 	void stateRise() {
 
 		if (counterState > 5) {
-			if (velocity.x > 0)
-				velocity.x = Mathf.Max (velocity.x - .0125f, 0f);
-			if (velocity.x < 0)
-				velocity.x = Mathf.Min (velocity.x + .0125f, 0f);
+			applyFriction (platformBelow);
 		}
 		physAdjust ();
 
@@ -419,20 +426,15 @@ public class Princess: Character{
 
 		if (counterState == 0) {
 			Instantiate ( hitbox, transform);
-			velocity.y = 0;
-		}
-		if (counterState > 46) {
-			destroyChildren ();
-			velocity.y -= gravity;
-			enemyCollisionCheck ();
+			velocity.y = Mathf.Min (velocity.y/2f, 0);
 		}
 
 		if (Input.GetKey (KeyCode.D))
-			velocity.x += 0.00625f;
+			applyAcceleration (null, true );
 		if (Input.GetKey (KeyCode.A))
-			velocity.x -= 0.00625f;
+			applyAcceleration (null, false);
 
-		if (Input.GetKeyDown (KeyCode.K))
+		if (counterState > 5 && counterState < 48 && Input.GetKeyDown (KeyCode.K))
 			velocity.y += gravity;
 
 		if (!platformBelow) velocity.y -= gravity /8f;
@@ -441,13 +443,37 @@ public class Princess: Character{
 
 		hazardCollisionCheck ();
 
-		if (counterState == 51) {
-			if (!platformBelow)
-				nextState = PrincessStates.Fall;
-			else
-				nextState = PrincessStates.Land;
+		if (platformBelow && velocity.y < 0f)
+			nextState = PrincessStates.Spinend;
+
+		if (counterState == 42) {
+			nextState = PrincessStates.Spinend;
 		}
 	
+	}
+
+	void stateSpinend() {
+
+		if (platformBelow)
+			applyFriction (platformBelow);
+		else
+			velocity.y -= gravity;
+
+		physAdjust ();
+
+		if (counterState == 12) {
+			if (platformBelow)
+				nextState = PrincessStates.Land;
+			else
+				nextState = PrincessStates.Fall;
+		}
+	}
+
+	void stateDeath() {
+
+		applyFriction (platformBelow);
+
+		physAdjust ();
 	}
 
 	void destroyChildren() {

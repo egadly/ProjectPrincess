@@ -1,13 +1,12 @@
 fileFormatVersion: 2
-guid: ec996a0c255242049a346c283fcbf2c5
-timeCreated: 1478499536
+guid: 2959ca9a4e250524890aac29ba655aad
+timeCreated: 1478666789
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
-    21300000: princess_pirouette_hitbox_0
-    21300002: princess_pirouette_hitbox_1
-    21300004: princess_pirouette_hitbox_2
-    21300006: princess_pirouette_hitbox_3
+    21300000: pirouette_hitbox_0
+    21300002: pirouette_hitbox_1
+    21300004: pirouette_hitbox_2
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -62,7 +61,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: princess_pirouette_hitbox_0
+      name: pirouette_hitbox_0
       rect:
         serializedVersion: 2
         x: 0
@@ -75,7 +74,7 @@ TextureImporter:
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: princess_pirouette_hitbox_1
+      name: pirouette_hitbox_1
       rect:
         serializedVersion: 2
         x: 21
@@ -88,23 +87,10 @@ TextureImporter:
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: princess_pirouette_hitbox_2
+      name: pirouette_hitbox_2
       rect:
         serializedVersion: 2
         x: 42
-        y: 0
-        width: 20
-        height: 20
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: princess_pirouette_hitbox_3
-      rect:
-        serializedVersion: 2
-        x: 63
         y: 0
         width: 20
         height: 20

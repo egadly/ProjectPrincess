@@ -12,6 +12,8 @@ public class Character : MonoBehaviour {
 	protected Collider2D platformRight;
 	protected Collider2D platformLeft;
 
+	protected float aerialDrift;
+	protected float runAcceleration;
 	protected float gravity;
 	protected float maxVspeed;
 	protected float maxHspeed;
@@ -112,5 +114,29 @@ public class Character : MonoBehaviour {
 			Utilities.Vec2 (position.x - col.size.x / 2f, position.y + col.size.y / 2f + col.offset.y),
 			Utilities.Vec2 (position.x + col.size.x / 2f, position.y - col.size.y / 2f + col.offset.y), mask);
 	}
+
+	protected void applyFriction( Collider2D platform ) {
+		if ( platform ) {
+			float frictionC = platform.gameObject.GetComponent<Platform> ().frictionConstant;
+			if (velocity.x > 0)
+				velocity.x = Mathf.Max (velocity.x - (frictionC * 0.0125f), 0f);
+			if (velocity.x < 0)
+				velocity.x = Mathf.Min (velocity.x + (frictionC * 0.0125f), 0f);
+		}
+	}
+
+	protected void applyAcceleration( Collider2D platform, bool rightDir ) {
+		int direction;
+		if (rightDir)
+			direction = 1;
+		else
+			direction = -1;
+		if (platform) {
+			float frictionC = platform.gameObject.GetComponent<Platform> ().frictionConstant;
+			velocity.x += direction * frictionC * runAcceleration;
+		} else
+			velocity.x += direction * aerialDrift;
+	}
+
 
 }
