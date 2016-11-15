@@ -21,10 +21,11 @@ public class Princess: Character{
 
 	// Use this for initialization
 	void Start () {
+
 		startPosition = transform.position;
 
 
-		health = 3;
+		health = 20;
 		position = transform.position;
 
 		aerialDrift = 0.0046875f;
@@ -115,8 +116,10 @@ public class Princess: Character{
 			break;
 		}
 
+		if ( justLanded ) Instantiate (particles [0], position, Quaternion.identity);
+
 		collectCollisionCheck ();
-		if ( currentState != PrincessStates.Hitstun && currentState != PrincessStates.Reel && currentState != PrincessStates.Rise && currentState != PrincessStates.Pirouette && currentState != PrincessStates.Death ) {
+		if ( currentState != PrincessStates.Hitstun && currentState != PrincessStates.Reel && currentState != PrincessStates.Rise && currentState != PrincessStates.Pirouette && currentState != PrincessStates.Death && currentState != PrincessStates.Dive ) {
 			enemyCollisionCheck ();
 			hazardCollisionCheck ();
 		}
@@ -149,8 +152,10 @@ public class Princess: Character{
 				}
 				if (platformBelow) {
 					velocity.y = 0;
-					if (health <= 0)
+					if (health <= 0) {
+						velocity.y = 0.1f;
 						nextState = PrincessStates.Reel;
+					}
 					else
 						nextState = PrincessStates.Hitstun;
 				}
@@ -199,11 +204,14 @@ public class Princess: Character{
 	void stateIdle() {
 		
 		applyFriction (platformBelow);
+
+		if ( velocity.x != 0 && (counterState%(int)((6f*Mathf.Sqrt(.1f))/Mathf.Sqrt(velocity.x)) == 0) ) Instantiate (particles [0], position, Quaternion.identity);
 		
 		physAdjust ();
 		if (!platformBelow)
 			nextState = PrincessStates.Fall;
 		if ( VirtualInput.leftDown || VirtualInput.rightDown ) {
+			Instantiate (particles [0], position, Quaternion.identity);
 			nextState = PrincessStates.Run;
 		}
 		if ( VirtualInput.kickPos )
@@ -216,6 +224,7 @@ public class Princess: Character{
 	}
 
 	void stateRun() {
+		bool prevDir = rightDir;
 		if ( VirtualInput.leftDown && VirtualInput.rightDown ) {
 			if (velocity.x > 0)
 				rightDir = true;
@@ -228,6 +237,7 @@ public class Princess: Character{
 			applyAcceleration (platformBelow, false);
 			rightDir = false;
 		}
+		if ( prevDir != rightDir )  Instantiate (particles [0], position, Quaternion.identity);
 		
 		physAdjust ();
 		if ( !VirtualInput.rightDown && !VirtualInput.leftDown ) {
@@ -236,9 +246,12 @@ public class Princess: Character{
 		if ( VirtualInput.kickPos ) {
 			nextState = PrincessStates.Pirouette;
 		}
+		if (Input.GetKeyDown (KeyCode.L))
+			nextState = PrincessStates.Dive;
 		if ( VirtualInput.jumpPos ){
 			nextState = PrincessStates.Crouch;
 		}
+
 
 		if (!platformBelow)
 			nextState = PrincessStates.Fall;
@@ -292,7 +305,9 @@ public class Princess: Character{
 		if ( VirtualInput.jumpPos && ((platformRight)||(platformLeft)) )
 			nextState = PrincessStates.Brace;
 
-		if (platformBelow) nextState = PrincessStates.Land; 
+		if (platformBelow) {
+			nextState = PrincessStates.Land;
+		}
 
 
 	}
@@ -320,6 +335,8 @@ public class Princess: Character{
 	}
 
 	void stateBrace() {
+
+		float width = gameObject.GetComponent < BoxCollider2D> ().size.x / 2f;
 		if (counterState == 0)
 			velocity.y = 0;
 
@@ -328,9 +345,11 @@ public class Princess: Character{
 			velocity.y = maxVspeed;
 			nextState = PrincessStates.WallJump;
 			if (platformRight) {
+				Instantiate (particles [0], new Vector3( position.x - (.5f - width), position.y, -2f ), Quaternion.Euler (new Vector3 (0f, 0f, 90f)));
 				rightDir = false;
 				velocity.x = -0.1f;
 			} else {
+				Instantiate (particles [0], new Vector3( position.x+ (.5f - width), position.y, -2f ), Quaternion.Euler (new Vector3 (0f, 0f, -90f)));
 				rightDir = true;
 				velocity.x = 0.1f;
 			}
@@ -370,6 +389,8 @@ public class Princess: Character{
 			counterShake = 0;
 		} else
 			counterShake = 1;
+
+		if ( counterState%6 == 0 && velocity.x != 0 ) Instantiate (particles [0], position, Quaternion.identity);
 
 		if (counterState == 15) {
 			nextState = PrincessStates.Idle;
@@ -412,10 +433,19 @@ public class Princess: Character{
 
 	void stateRise() {
 
+		if (counterState == 0)
+			GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<GameCamera> ().counterShake = 6;
+
 		if (counterState > 5) {
 			applyFriction (platformBelow);
 		}
+		if ( velocity.x != 0 && counterState%6 == 0 )  Instantiate (particles [0], position, Quaternion.identity);
 		physAdjust ();
+
+		if (!platformBelow) {
+			nextState = PrincessStates.Fall;
+			counterInvulnerable = 60;
+		}
 
 		if (counterState == 22 ) {
 			nextState = PrincessStates.Idle;
@@ -426,26 +456,33 @@ public class Princess: Character{
 	void statePirouette () {
 
 		if (counterState == 0) {
-			Instantiate ( hitbox, transform);
+			Instantiate (hitbox, transform);
 			velocity.y = Mathf.Min (velocity.y/2f, 0);
 		}
 
 		if ( VirtualInput.rightDown )
-			applyAcceleration (platformBelow, true );
+			applyAcceleration (null, true );
 		if ( VirtualInput.leftDown )
-			applyAcceleration (platformBelow, false);
+			applyAcceleration (null, false);
 
 		if (counterState > 5 && counterState < 48 && VirtualInput.kickPos )
 			velocity.y += gravity;
 
 		if (!platformBelow) velocity.y -= gravity /8f;
+		else if ( counterState%6 == 0 && velocity.x != 0 ) Instantiate (particles [0], position, Quaternion.identity);
 
 		physAdjust ();
 
+		if (counterState >= 36)
+			enemyCollisionCheck ();
 		hazardCollisionCheck ();
 
-		if ( (platformBelow && velocity.y < 0f ) || counterState == 42 )
+		if ((platformBelow && velocity.y < 0f) || counterState >= 42) {
 			nextState = PrincessStates.Spinend;
+		}
+
+		if ( !platformBelow && VirtualInput.jumpPos && ((platformRight)||(platformLeft)) )
+			nextState = PrincessStates.Brace;
 	
 	}
 
@@ -465,6 +502,7 @@ public class Princess: Character{
 				nextState = PrincessStates.Fall;
 		}
 	}
+
 	void stateDive() {
 
 		int direction = 1;
@@ -473,22 +511,28 @@ public class Princess: Character{
 
 		if (counterState == 0) {
 			velocity.x = 0;
-			velocity.y = .025f;
+			velocity.y = .05f;
+		} else if (counterState < 24)
+			velocity.x += (maxHspeed  * direction);
+		else {
+			applyFriction ( platformBelow );
 		}
-
-		velocity.x += (.2f * ((16 - counterState) / 16f)*((16 - counterState) / 16f) * direction);
 
 		if (!platformBelow)
 			velocity.y -= gravity;
+		else if ( counterState%6 == 0 && counterState < 24 ) Instantiate (particles [0], position, Quaternion.identity);
 
 
 		physAdjust ();
 
-		if (counterState == 15) {
-			if (platformBelow)
-				nextState = PrincessStates.Rise;
-			else
+		if (counterState >= 24) {
+			enemyCollisionCheck ();
+			hazardCollisionCheck ();
+			if ( !platformBelow )
 				nextState = PrincessStates.Fall;
+		}
+		if (counterState == 35) {
+			nextState = PrincessStates.Idle;
 		}
 	}
 
@@ -497,6 +541,9 @@ public class Princess: Character{
 		applyFriction (platformBelow);
 
 		physAdjust ();
+
+		if (health > 0)
+			nextState = PrincessStates.Rise;
 	}
 
 	void destroyChildren() {

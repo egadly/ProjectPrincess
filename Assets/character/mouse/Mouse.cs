@@ -3,14 +3,19 @@ using System.Collections;
 
 public class Mouse : Enemy {
 
-	public enum MouseStates { Idle, Run, Fall };
+	public enum MouseStates { Idle, Run, Fall, Hitstun, Dead };
 	public MouseStates currentState;
 	MouseStates nextState;
 	public int counterState;
 	public int stateLength;
+	public int minLength;
+
+	private int counterShake;
 
 	// Use this for initialization
 	void Start () {
+
+		health = 10;
 
 		position = transform.position;
 
@@ -24,7 +29,8 @@ public class Mouse : Enemy {
 		spriteRenderer = gameObject.GetComponent<SpriteRenderer> ();
 
 		currentState = MouseStates.Idle;
-		stateLength = (int)Random.Range (15, 60);
+		stateLength = (int)Random.Range (minLength, 60);
+		minLength = 15;
 
 	
 	}
@@ -39,8 +45,10 @@ public class Mouse : Enemy {
 			currentState = nextState;
 		}
 
-		if ( counterState == 0 ) stateLength = (int)Random.Range (15, 60);
-
+		if (counterState == 0) {
+			stateLength = (int)Random.Range (minLength, 60);
+			minLength = 15;
+		}
 		gameObject.GetComponent<Animator> ().SetInteger ("State", (int)currentState);
 
 		switch (currentState) {
@@ -53,18 +61,47 @@ public class Mouse : Enemy {
 		case MouseStates.Fall:
 			stateFall ();
 			break;
+		case MouseStates.Hitstun:
+			stateHitstun ();
+			break;
+		case MouseStates.Dead:
+			stateDead ();
+			break;
 		}
 
-		//Test Hits
-		if ( ifCollision( 1 << LayerMask.NameToLayer( "PlayerHitboxes" ) ) ) Destroy( this.gameObject );
+		if (justLanded) Instantiate (particles [0], position, Quaternion.identity);
 
+		//Test Hits
+		if ( currentState != MouseStates.Hitstun && currentState != MouseStates.Dead ) enemyCollisionCheck();
+		if (currentState != MouseStates.Fall && health <= 0)
+			nextState = MouseStates.Dead;
 		spriteRenderer.flipX = !rightDir;
-		transform.position = position;
-	
+
+		if (counterShake == 0)
+			transform.position = position;
+		else
+			transform.position = new Vector3(position.x + Random.Range (-.25f, .25f), position.y + Random.Range (-.25f, .25f), position.z); 	
+	}
+
+	void enemyCollisionCheck() {
+			Collider2D other = ifCollision (1 << LayerMask.NameToLayer ("PlayerHitboxes"));
+			if (other != null) {
+				health -= other.gameObject.GetComponent<Hitbox> ().damage;
+				if (other.gameObject.transform.position.x >= position.x) {
+					rightDir = true;
+					velocity.x = -maxHspeed;
+				} else {
+					rightDir = false;
+					velocity.x = maxHspeed;
+				}
+			if ( health<= 0 ) velocity.y = 1f;
+			nextState = MouseStates.Hitstun;
+			}
 	}
 
 	void stateIdle() {
 		if (counterState == stateLength) {
+			Instantiate (particles [0], position, Quaternion.identity);
 			nextState = MouseStates.Run;
 			if (platformLeft)
 				rightDir = true;
@@ -86,6 +123,7 @@ public class Mouse : Enemy {
 	}
 
 	void stateRun() {
+
 		if (counterState == stateLength) {
 			nextState = MouseStates.Idle;
 		}
@@ -111,5 +149,36 @@ public class Mouse : Enemy {
 
 		if (platformBelow != null)
 			nextState = MouseStates.Idle;
+	}
+
+	void stateHitstun() {
+		if (counterState < 6) {
+			counterShake = 1;
+			gameObject.GetComponent<Animator> ().speed = 0;
+		} else {
+			counterShake = 0;
+			gameObject.GetComponent<Animator> ().speed = 1;
+		}
+
+		if ( counterState%6 == 0 && velocity.x != 0 ) Instantiate (particles [0], position, Quaternion.identity);
+
+		if (!platformBelow) velocity.y -= gravity;
+		//applyFriction (platformBelow);
+		physAdjust ();
+
+		if (counterState >= 15) {
+			minLength = 45;
+			nextState = MouseStates.Idle;
+		}
+		if (!platformBelow)
+			nextState = MouseStates.Fall;
+	}
+
+	void stateDead() {
+		gameObject.GetComponent<BoxCollider2D> ().enabled = false;
+
+		if (!platformBelow) velocity.y -= gravity;
+		applyFriction (platformBelow);
+		physAdjust ();
 	}
 }

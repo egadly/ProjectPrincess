@@ -4,6 +4,7 @@ using System.Collections;
 public class Hitbox : MonoBehaviour {
 
 	public int counterLife;
+	public int damage = 1;
 
 	// Use this for initialization
 	void Start () {

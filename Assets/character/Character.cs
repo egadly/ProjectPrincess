@@ -5,10 +5,10 @@ public class Character : MonoBehaviour {
 
 	public int health;
 
-	protected Vector3 position;
+	public Vector3 position;
 	public Vector3 velocity;
 	protected Collider2D platformAbove;
-	protected Collider2D platformBelow;
+	public Collider2D platformBelow;
 	protected Collider2D platformRight;
 	protected Collider2D platformLeft;
 
@@ -19,11 +19,16 @@ public class Character : MonoBehaviour {
 	protected float maxHspeed;
 
 	public bool rightDir;
+	public bool justLanded;
 
 	public SpriteRenderer spriteRenderer;
 	public Rigidbody2D rigidBody;
 
+	public GameObject[] particles = new GameObject[2];
+
 	protected void physAdjust() {
+
+		bool prevLanded = (bool)platformBelow;
 
 		LayerMask platforms = 1 << LayerMask.NameToLayer ("Platforms");
 		BoxCollider2D col = gameObject.GetComponent<BoxCollider2D> ();
@@ -48,6 +53,11 @@ public class Character : MonoBehaviour {
 		}
 
 		adjacentPlatformCheck ( col, platforms );
+
+		if (platformBelow != null && !prevLanded)
+			justLanded = true;
+		else
+			justLanded = false;
 
 	}
 
