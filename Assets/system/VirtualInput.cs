@@ -111,12 +111,15 @@ public class VirtualInput : MonoBehaviour {
 				
         }
 
-		if (Input.GetKeyDown (KeyCode.Q)) {
+
+
+	}
+
+	public void enablePolling(){
+		if (!polling) {					
 			polling = true;
-			pollBuffer = 60;
+			pollBuffer = 6;
 			pollIndex = 0;
 		}
-
-
 	}
 }

@@ -57,7 +57,7 @@ public class optionsScript : MonoBehaviour {
 	}
 
 
-    private void OnDisable()
+	private void OnDisable()
     {
         buttonSelected = false;
     }
