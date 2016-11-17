@@ -15,7 +15,7 @@ public class Mouse : Enemy {
 	// Use this for initialization
 	void Start () {
 
-		health = 10;
+		health = 1;
 
 		position = transform.position;
 
@@ -152,6 +152,7 @@ public class Mouse : Enemy {
 	}
 
 	void stateHitstun() {
+		if ( counterState == 0 ) Instantiate (particles [0], position, Quaternion.identity);
 		if (counterState < 6) {
 			counterShake = 1;
 			gameObject.GetComponent<Animator> ().speed = 0;
@@ -160,10 +161,8 @@ public class Mouse : Enemy {
 			gameObject.GetComponent<Animator> ().speed = 1;
 		}
 
-		if ( counterState%6 == 0 && velocity.x != 0 ) Instantiate (particles [0], position, Quaternion.identity);
-
 		if (!platformBelow) velocity.y -= gravity;
-		//applyFriction (platformBelow);
+		applyFriction (platformBelow);
 		physAdjust ();
 
 		if (counterState >= 15) {

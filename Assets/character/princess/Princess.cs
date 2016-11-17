@@ -205,7 +205,7 @@ public class Princess: Character{
 		
 		applyFriction (platformBelow);
 
-		if ( velocity.x != 0 && (counterState%(int)((6f*Mathf.Sqrt(.1f))/Mathf.Sqrt(velocity.x)) == 0) ) Instantiate (particles [0], position, Quaternion.identity);
+		if ( counterState == 0 && velocity.x != 0 ) Instantiate (particles [0], position, Quaternion.identity);
 		
 		physAdjust ();
 		if (!platformBelow)
@@ -384,13 +384,13 @@ public class Princess: Character{
 
 	void stateHitstun() {
 
+		if ( counterState == 0 ) Instantiate (particles [0], position, Quaternion.identity);
+
 		if (counterState > 6) {
 			physAdjust ();
 			counterShake = 0;
 		} else
 			counterShake = 1;
-
-		if ( counterState%6 == 0 && velocity.x != 0 ) Instantiate (particles [0], position, Quaternion.identity);
 
 		if (counterState == 15) {
 			nextState = PrincessStates.Idle;
@@ -433,13 +433,14 @@ public class Princess: Character{
 
 	void stateRise() {
 
-		if (counterState == 0)
+		if (counterState == 0) {
+			Instantiate (particles [0], position, Quaternion.identity);
 			GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<GameCamera> ().counterShake = 6;
-
-		if (counterState > 5) {
-			applyFriction (platformBelow);
 		}
-		if ( velocity.x != 0 && counterState%6 == 0 )  Instantiate (particles [0], position, Quaternion.identity);
+
+		if (counterState > 5) 
+			applyFriction (platformBelow);
+
 		physAdjust ();
 
 		if (!platformBelow) {
@@ -469,7 +470,7 @@ public class Princess: Character{
 			velocity.y += gravity;
 
 		if (!platformBelow) velocity.y -= gravity /8f;
-		else if ( counterState%6 == 0 && velocity.x != 0 ) Instantiate (particles [0], position, Quaternion.identity);
+		else if ( counterState==6 || (counterState%6 == 0 && velocity.x != 0) ) Instantiate (particles [0], position, Quaternion.identity);
 
 		physAdjust ();
 
@@ -481,7 +482,7 @@ public class Princess: Character{
 			nextState = PrincessStates.Spinend;
 		}
 
-		if ( !platformBelow && VirtualInput.jumpPos && ((platformRight)||(platformLeft)) )
+		if ( counterState > 2 && !platformBelow && VirtualInput.jumpPos && ((platformRight)||(platformLeft)) )
 			nextState = PrincessStates.Brace;
 	
 	}

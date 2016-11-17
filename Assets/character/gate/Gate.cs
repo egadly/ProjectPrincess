@@ -1,9 +1,10 @@
-﻿using UnityEngine;
+﻿ using UnityEngine;
 using System.Collections;
 
 public class Gate : Enemy {
 
 	public GameCamera theCamera;
+	public Princess thePrincess;
 
 	public bool isRising = true;
 	public bool startRising = true;
@@ -13,16 +14,18 @@ public class Gate : Enemy {
 	public int startCycle = 360;
 	int counterShake = 0;
 	public int offset;
+	public int directionKnockback;
 
 	// Use this for initialization
 	void Start () {
 
 		theCamera = GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<GameCamera> ();
+		thePrincess = GameObject.FindGameObjectWithTag ("Player").GetComponent<Princess> ();
 		counterCycle = startCycle;
 		
 		counterLife = 0;
 		gravity = 0.0125f;
-		collisionDamage = 0;
+		collisionDamage = 1;
 		position = transform.position;
 		maxVspeed = .2f;
 	
@@ -36,6 +39,10 @@ public class Gate : Enemy {
 		if (master == null) {
 			if (counterLife == 0)
 				isRising = !isRising;
+			if ( counterLife != 0 && velocity.y == 0 && Mathf.Abs (position.x - thePrincess.position.x) < 1f && isRising) {
+				counterLife = 0;
+				isRising = false;
+			}
 		} else {
 			if (master.GetComponent<Switch> ().isActive)
 				isRising = startRising;
@@ -65,16 +72,20 @@ public class Gate : Enemy {
 		Collider2D other = ifCollision (1<<LayerMask.NameToLayer ("Player"));
 
 		if ( other ) {
-			Princess princess = other.gameObject.GetComponent<Princess> ();
 			BoxCollider2D col = gameObject.GetComponent < BoxCollider2D >();
-			if (princess.position.x < position.x)
-				princess.position.x = position.x - col.size.x / 2f - princess.gameObject.GetComponent<BoxCollider2D> ().size.x / 2f;
-			else princess.position.x = position.x + col.size.x / 2f + princess.gameObject.GetComponent<BoxCollider2D> ().size.x / 2f;
-			princess.transform.position = princess.position;
-			//if (princess.position.x < position.x)
-			//	princess.velocity.x -= .05f;
-			//else
-			//	princess.velocity.x += 0.05f;
+			if (directionKnockback == 0) {
+				if (thePrincess.position.x < position.x)
+					thePrincess.position.x = position.x - col.size.x / 2f - thePrincess.gameObject.GetComponent<BoxCollider2D> ().size.x / 2f;
+				else
+					thePrincess.position.x = position.x + col.size.x / 2f + thePrincess.gameObject.GetComponent<BoxCollider2D> ().size.x / 2f;
+			} else  thePrincess.position.x = position.x + ( directionKnockback * col.size.x / 2f ) + ( directionKnockback * thePrincess.gameObject.GetComponent<BoxCollider2D> ().size.x / 2f );
+
+			/*if (thePrincess.position.x < position.x)
+				thePrincess.velocity.x = Mathf.Max(-.05f, thePrincess.velocity.x);
+			else
+				thePrincess.velocity.x = Mathf.Min(0.05f,thePrincess.velocity.x);*/
+			thePrincess.transform.position = thePrincess.position;
+
 		}
 
 		if (counterLife == 0)

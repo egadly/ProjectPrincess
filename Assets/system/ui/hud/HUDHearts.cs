@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 
-public class Hearts_HUD : MonoBehaviour {
+public class HUDHearts : MonoBehaviour {
 
 	public int maximumHealth = 10;
 	public int savedHealth = 0;
@@ -14,10 +14,12 @@ public class Hearts_HUD : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+
 		
 		princess = GameObject.FindGameObjectWithTag ("Player").GetComponent<Princess> ();
 
 		hearts = new GameObject[maximumHealth];
+
 		scale = Screen.height / 360;
 
 		for ( int i = 0; i < maximumHealth; i++ ) {
