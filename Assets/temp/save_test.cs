@@ -12,7 +12,7 @@ public class save_test : MonoBehaviour {
 
 	public save_test test;
 	public Princess thePrincess;
-
+    public GlobalScore scoreManager;
 	// makes certain the data is the right(current) data
 	// as opposed to onStart(), (which comes afterwards) 
 	void Awake () {
@@ -28,6 +28,7 @@ public class save_test : MonoBehaviour {
 
 	void Start() {
 		thePrincess = GameObject.FindGameObjectWithTag ("Player").GetComponent<Princess> ();
+        scoreManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GlobalScore>();
 	}
 
 	void Update() {
@@ -42,7 +43,7 @@ public class save_test : MonoBehaviour {
 		Debug.Log ("Saving...");
 		BinaryFormatter bf = new BinaryFormatter();
 		FileStream file = File.Create(Application.persistentDataPath + "/saveTest.dat");
-		PlayerData data = new PlayerData (thePrincess.health, thePrincess.keys) ;
+		PlayerData data = new PlayerData (thePrincess.health, thePrincess.keys, GlobalScore.Instance) ;
 		bf.Serialize(file, data);
 		file.Close();
 	}
@@ -67,10 +68,11 @@ public class save_test : MonoBehaviour {
 	{
 		public int health;
 		public int keys;
-
-		public PlayerData( int h, int k ) {
+        public int[] score;
+		public PlayerData( int h, int k , int[] s) {
 			health = h;
 			keys = k;
+            score = s;
 		}
 	}
 
