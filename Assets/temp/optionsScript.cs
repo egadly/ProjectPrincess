@@ -7,11 +7,20 @@ public class optionsScript : MonoBehaviour {
 
 	public EventSystem eventSystem;
     public GameObject selectedObject;
+	//public GameObject controlGate;
+	public VirtualInput input;
+
+	public GameObject pausePanel;
+	public GameObject optionsPanel;
+	public GameObject exitPanel;
+	public GameObject controlPanel;
+
     private bool buttonSelected;
     public bool isPaused;
 
 	// Use this for initialization
 	void Start () {
+		input = GameObject.FindGameObjectWithTag ("GameController").GetComponent<VirtualInput> ();
 		GetComponentInChildren<Canvas>().enabled = false;
 		isPaused = false;
 		Time.timeScale = 1.0f;
@@ -28,10 +37,19 @@ public class optionsScript : MonoBehaviour {
             eventSystem.SetSelectedGameObject(selectedObject);
             buttonSelected = true;
         }
+		if (controlPanel.activeSelf && !input.polling) {
+			controlPanel.SetActive (false);
+			optionsPanel.SetActive (true);
+		}
     }
 
 	public void togglePauseMenu()
 	{
+		if (!pausePanel.activeSelf) {
+			pausePanel.SetActive (true);
+		} else {
+			pausePanel.SetActive (false);
+		}
 		if (!GetComponentInChildren<Canvas>().enabled)
 		{
 			GetComponentInChildren<Canvas>().enabled = true;
