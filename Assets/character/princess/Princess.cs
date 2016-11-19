@@ -19,9 +19,11 @@ public class Princess: Character{
 
 	public Object hitbox;
 
+	//public optionsScript os;
+
 	// Use this for initialization
 	void Start () {
-
+		os = GameObject.FindGameObjectWithTag ("Panel").GetComponent<optionsScript>();
 		startPosition = transform.position;
 
 
@@ -47,93 +49,94 @@ public class Princess: Character{
 
 	// Update is called once per frame
 	void Update () {
+		if (!os.isPaused) {
+			rigidBody.WakeUp ();
+		//if (!os.isPaused) {
+			if (Input.GetKeyDown (KeyCode.Q))
+				position = startPosition;
 
-		rigidBody.WakeUp ();
+			if (currentState == nextState)
+				counterState++;
+			else {
+				counterState = 0;
+				currentState = nextState;
+				gameObject.GetComponent<Animator> ().speed = 1;
+				destroyChildren ();
+			}
 
-		if (Input.GetKeyDown (KeyCode.Q))
-			position = startPosition;
+			counterInvulnerable = Mathf.Max (--counterInvulnerable, 0);
+			counterShake = Mathf.Max (--counterShake, 0);
 
-		if (currentState == nextState)
-			counterState++;
-		else {
-			counterState = 0;
-			currentState = nextState;
-			gameObject.GetComponent<Animator> ().speed = 1;
-			destroyChildren ();
+			gameObject.GetComponent<Animator> ().SetInteger ("State", (int)currentState);
+
+
+			switch (currentState) {
+			case PrincessStates.Idle:
+				stateIdle ();
+				break;
+			case PrincessStates.Run:
+				stateRun ();
+				break;
+			case PrincessStates.Jump:
+				stateJump ();
+				break;
+			case PrincessStates.Fall:
+				stateFall ();
+				break;
+			case PrincessStates.Crouch:
+				stateCrouch ();
+				break;
+			case PrincessStates.Land:
+				stateLand ();
+				break;
+			case PrincessStates.Brace:
+				stateBrace ();
+				break;
+			case PrincessStates.WallJump:
+				stateWallJump ();
+				break;
+			case PrincessStates.Hitstun:
+				stateHitstun ();
+				break;
+			case PrincessStates.Reel:
+				stateReel ();
+				break;
+			case PrincessStates.Rise:
+				stateRise ();
+				break;
+			case PrincessStates.Pirouette:
+				statePirouette ();
+				break;
+			case PrincessStates.Spinend:
+				stateSpinend ();
+				break;
+			case PrincessStates.Dive:
+				stateDive ();
+				break;
+			case PrincessStates.Death:
+				stateDeath ();
+				break;
+			}
+
+			if (justLanded)
+				Instantiate (particles [0], position, Quaternion.identity);
+
+			collectCollisionCheck ();
+			if (currentState != PrincessStates.Hitstun && currentState != PrincessStates.Reel && currentState != PrincessStates.Rise && currentState != PrincessStates.Pirouette && currentState != PrincessStates.Death && currentState != PrincessStates.Dive) {
+				enemyCollisionCheck ();
+				hazardCollisionCheck ();
+			}
+
+			if (counterInvulnerable != 0)
+				spriteRenderer.color = new Color (1f, 1f, 1f, .5f);
+			else
+				spriteRenderer.color = Color.white;
+			spriteRenderer.flipX = !rightDir;
+			if (counterShake == 0)
+				transform.position = position;
+			else
+				transform.position = new Vector3 (position.x + Random.Range (-.25f, .25f), position.y + Random.Range (-.25f, .25f), position.z); 
 		}
-
-		counterInvulnerable = Mathf.Max (--counterInvulnerable, 0);
-		counterShake = Mathf.Max (--counterShake, 0);
-
-		gameObject.GetComponent<Animator> ().SetInteger ("State", (int)currentState);
-
-
-		switch (currentState) {
-		case PrincessStates.Idle:
-			stateIdle ();
-			break;
-		case PrincessStates.Run:
-			stateRun ();
-			break;
-		case PrincessStates.Jump:
-			stateJump ();
-			break;
-		case PrincessStates.Fall:
-			stateFall ();
-			break;
-		case PrincessStates.Crouch:
-			stateCrouch ();
-			break;
-		case PrincessStates.Land:
-			stateLand ();
-			break;
-		case PrincessStates.Brace:
-			stateBrace ();
-			break;
-		case PrincessStates.WallJump:
-			stateWallJump();
-			break;
-		case PrincessStates.Hitstun:
-			stateHitstun ();
-			break;
-		case PrincessStates.Reel:
-			stateReel ();
-			break;
-		case PrincessStates.Rise:
-			stateRise ();
-			break;
-		case PrincessStates.Pirouette:
-			statePirouette ();
-			break;
-		case PrincessStates.Spinend:
-			stateSpinend ();
-			break;
-		case PrincessStates.Dive:
-			stateDive ();
-			break;
-		case PrincessStates.Death:
-			stateDeath ();
-			break;
-		}
-
-		if ( justLanded ) Instantiate (particles [0], position, Quaternion.identity);
-
-		collectCollisionCheck ();
-		if ( currentState != PrincessStates.Hitstun && currentState != PrincessStates.Reel && currentState != PrincessStates.Rise && currentState != PrincessStates.Pirouette && currentState != PrincessStates.Death && currentState != PrincessStates.Dive ) {
-			enemyCollisionCheck ();
-			hazardCollisionCheck ();
-		}
-
-		if (counterInvulnerable!=0)
-			spriteRenderer.color = new Color( 1f, 1f, 1f, .5f);
-		else
-			spriteRenderer.color = Color.white;
-		spriteRenderer.flipX = !rightDir;
-		if (counterShake == 0)
-			transform.position = position;
-		else
-			transform.position = new Vector3(position.x + Random.Range (-.25f, .25f), position.y + Random.Range (-.25f, .25f), position.z); 
-
 	}
 
 	//Begin Common Functions

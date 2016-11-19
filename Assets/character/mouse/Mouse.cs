@@ -12,9 +12,11 @@ public class Mouse : Enemy {
 
 	private int counterShake;
 
+
+
 	// Use this for initialization
 	void Start () {
-
+		os = GameObject.FindGameObjectWithTag ("Panel").GetComponent<optionsScript>();
 		health = 1;
 
 		position = transform.position;
@@ -37,50 +39,53 @@ public class Mouse : Enemy {
 	
 	// Update is called once per frame
 	void Update () {
+		if (!os.isPaused) {
+			if (currentState == nextState)
+				counterState++;
+			else {
+				counterState = 0;
+				currentState = nextState;
+			}
 
-		if (currentState == nextState)
-			counterState++;
-		else {
-			counterState = 0;
-			currentState = nextState;
+			if (counterState == 0) {
+				stateLength = (int)Random.Range (minLength, 60);
+				minLength = 15;
+			}
+			gameObject.GetComponent<Animator> ().SetInteger ("State", (int)currentState);
+
+			switch (currentState) {
+			case MouseStates.Idle:
+				stateIdle ();
+				break;
+			case MouseStates.Run:
+				stateRun ();
+				break;
+			case MouseStates.Fall:
+				stateFall ();
+				break;
+			case MouseStates.Hitstun:
+				stateHitstun ();
+				break;
+			case MouseStates.Dead:
+				stateDead ();
+				break;
+			}
+
+			if (justLanded)
+				Instantiate (particles [0], position, Quaternion.identity);
+
+			//Test Hits
+			if (currentState != MouseStates.Hitstun && currentState != MouseStates.Dead)
+				enemyCollisionCheck ();
+			if (currentState != MouseStates.Fall && health <= 0)
+				nextState = MouseStates.Dead;
+			spriteRenderer.flipX = !rightDir;
+
+			if (counterShake == 0)
+				transform.position = position;
+			else
+				transform.position = new Vector3 (position.x + Random.Range (-.25f, .25f), position.y + Random.Range (-.25f, .25f), position.z); 	
 		}
-
-		if (counterState == 0) {
-			stateLength = (int)Random.Range (minLength, 60);
-			minLength = 15;
-		}
-		gameObject.GetComponent<Animator> ().SetInteger ("State", (int)currentState);
-
-		switch (currentState) {
-		case MouseStates.Idle:
-			stateIdle ();
-			break;
-		case MouseStates.Run:
-			stateRun ();
-			break;
-		case MouseStates.Fall:
-			stateFall ();
-			break;
-		case MouseStates.Hitstun:
-			stateHitstun ();
-			break;
-		case MouseStates.Dead:
-			stateDead ();
-			break;
-		}
-
-		if (justLanded) Instantiate (particles [0], position, Quaternion.identity);
-
-		//Test Hits
-		if ( currentState != MouseStates.Hitstun && currentState != MouseStates.Dead ) enemyCollisionCheck();
-		if (currentState != MouseStates.Fall && health <= 0)
-			nextState = MouseStates.Dead;
-		spriteRenderer.flipX = !rightDir;
-
-		if (counterShake == 0)
-			transform.position = position;
-		else
-			transform.position = new Vector3(position.x + Random.Range (-.25f, .25f), position.y + Random.Range (-.25f, .25f), position.z); 	
 	}
 
 	void enemyCollisionCheck() {
