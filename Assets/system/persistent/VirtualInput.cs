@@ -41,6 +41,8 @@ public class VirtualInput : MonoBehaviour {
 	public int pollBuffer = 0;
 	public int pollIndex = 0;
 
+	SaveManager save;
+
 ///////////////////////////////////////////////
 	/// 
 
@@ -55,6 +57,7 @@ public class VirtualInput : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		save = GameObject.FindGameObjectWithTag ("Save").GetComponent<SaveManager> ();
 		cur_vKeys = new bool[509];
 	}
 	
@@ -89,6 +92,7 @@ public class VirtualInput : MonoBehaviour {
 								break;
 							case 5:
 								leapButton = i;
+								save.Save ();
 								break;
 							}
 							break;
