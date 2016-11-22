@@ -41,17 +41,24 @@ public class VirtualInput : MonoBehaviour {
 	public int pollBuffer = 0;
 	public int pollIndex = 0;
 
-///////////////////////////////////////////////
+	SaveManager save;
 
-	// Use this for initialization
-	void Start () {
-		cur_vKeys = new bool[509];
+///////////////////////////////////////////////
+	/// 
+
+	void Awake() {
 		jumpButton = (int)KeyCode.J;
 		kickButton = (int)KeyCode.K;
 		leapButton = (int)KeyCode.L;
 		rightButton = (int)KeyCode.D;
 		leftButton = (int)KeyCode.A;
-		downButton = (int)KeyCode.S;		
+		downButton = (int)KeyCode.S;
+	}
+
+	// Use this for initialization
+	void Start () {
+		save = GameObject.FindGameObjectWithTag ("Save").GetComponent<SaveManager> ();
+		cur_vKeys = new bool[509];
 	}
 	
 	// Update is called once per frame
@@ -85,6 +92,7 @@ public class VirtualInput : MonoBehaviour {
 								break;
 							case 5:
 								leapButton = i;
+								save.Save ();
 								break;
 							}
 							break;
