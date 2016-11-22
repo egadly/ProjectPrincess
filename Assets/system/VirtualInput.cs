@@ -10,6 +10,7 @@ public class VirtualInput : MonoBehaviour {
 	public int rightButton;
 	public int jumpButton;
 	public int kickButton;
+	public int leapButton;
 
 	public static bool leftDown;
 	public static bool leftPos;
@@ -31,6 +32,10 @@ public class VirtualInput : MonoBehaviour {
 	public static bool kickPos;
 	public static bool kickNeg;
 
+	public static bool leapDown;
+	public static bool leapPos;
+	public static bool leapNeg;
+
 	public bool polling = false;
 
 	public int pollBuffer = 0;
@@ -43,11 +48,10 @@ public class VirtualInput : MonoBehaviour {
 		cur_vKeys = new bool[509];
 		jumpButton = (int)KeyCode.J;
 		kickButton = (int)KeyCode.K;
+		leapButton = (int)KeyCode.L;
 		rightButton = (int)KeyCode.D;
 		leftButton = (int)KeyCode.A;
-		downButton = (int)KeyCode.S;
-
-		
+		downButton = (int)KeyCode.S;		
 	}
 	
 	// Update is called once per frame
@@ -58,12 +62,12 @@ public class VirtualInput : MonoBehaviour {
 				cur_vKeys [i] = Input.GetKey ((KeyCode)i);
 			}
 			if (pollBuffer <= 0) {
+				HUD hud = GameObject.FindGameObjectWithTag ("HUD").GetComponent<HUD> ();
 				if (Input.anyKeyDown) {
-					if (pollIndex == 4) polling = false;
+					if (pollIndex == 5) polling = false;
 					for (int i = 0; i < 509; i++) {
 						if (cur_vKeys [i]) {
 							switch (pollIndex) {
-
 							case 0:
 								leftButton = i;
 								break;
@@ -79,11 +83,40 @@ public class VirtualInput : MonoBehaviour {
 							case 4:
 								kickButton = i;
 								break;
+							case 5:
+								leapButton = i;
+								break;
 							}
 							break;
 						}
 					}
 					pollIndex++;
+				}
+				switch (pollIndex) {
+				case 0:
+					if (!hud.dialogActive)
+						hud.createDialog ("Press the button for Left...");
+					break;
+				case 1:
+					if (!hud.dialogActive)
+						hud.createDialog ("Press the button for Down...");
+					break;
+				case 2:
+					if (!hud.dialogActive)
+						hud.createDialog ("Press the button for Right...");
+					break;
+				case 3:
+					if (!hud.dialogActive)
+						hud.createDialog ("Press the button for Jump...");
+					break;
+				case 4:
+					if (!hud.dialogActive)
+						hud.createDialog ("Press the button for Kick...");
+					break;
+				case 5:
+					if (!hud.dialogActive)
+						hud.createDialog ("Press the button for Leap...");
+					break;
 				}
 			} else
 				pollBuffer--;
@@ -96,6 +129,12 @@ public class VirtualInput : MonoBehaviour {
 			kickDown = Input.GetKey ((KeyCode)kickButton);
 			kickPos = Input.GetKeyDown ((KeyCode)kickButton);
 			kickNeg = Input.GetKeyUp ((KeyCode)kickButton);
+
+			leapDown = Input.GetKey ((KeyCode)leapButton);
+			leapPos = Input.GetKeyDown ((KeyCode)leapButton);
+			leapNeg = Input.GetKeyUp ((KeyCode)leapButton);
+
+
 
 			rightDown = Input.GetKey ((KeyCode)rightButton);
 			rightPos = Input.GetKeyDown ((KeyCode)rightButton);

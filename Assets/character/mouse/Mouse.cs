@@ -16,8 +16,10 @@ public class Mouse : Enemy {
 
 	// Use this for initialization
 	void Start () {
-		os = GameObject.FindGameObjectWithTag ("Panel").GetComponent<optionsScript>();
-		health = 1;
+		GameObject panel = GameObject.FindGameObjectWithTag ("Panel");
+		if ( panel ) os = panel.GetComponent<optionsScript>();
+		GameObject hudinstance = GameObject.FindGameObjectWithTag ("HUD");
+		if ( hudinstance ) hud = hudinstance.GetComponent<HUD>();
 
 		position = transform.position;
 
@@ -39,7 +41,7 @@ public class Mouse : Enemy {
 	
 	// Update is called once per frame
 	void Update () {
-		if (!os.isPaused) {
+		if (( os==null || !os.isPaused ) && ( hud==null || !hud.dialogActive )) {
 			if (currentState == nextState)
 				counterState++;
 			else {
@@ -93,9 +95,11 @@ public class Mouse : Enemy {
 			if (other != null) {
 				health -= other.gameObject.GetComponent<Hitbox> ().damage;
 				if (other.gameObject.transform.position.x >= position.x) {
+					Instantiate (particles [1], new Vector3 (other.gameObject.transform.position.x - other.bounds.size.x / 2f, position.y, -1f), Quaternion.identity);
 					rightDir = true;
 					velocity.x = -maxHspeed;
 				} else {
+					Instantiate (particles [1], new Vector3 (other.gameObject.transform.position.x + other.bounds.size.x / 2f, position.y, -1f), Quaternion.identity);
 					rightDir = false;
 					velocity.x = maxHspeed;
 				}

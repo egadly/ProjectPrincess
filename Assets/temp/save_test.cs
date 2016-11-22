@@ -11,7 +11,7 @@ using System.IO;
 public class save_test : MonoBehaviour {
 
 	public save_test test;
-	public Princess thePrincess;
+	public VirtualInput vInput;
 
 	// makes certain the data is the right(current) data
 	// as opposed to onStart(), (which comes afterwards) 
@@ -27,7 +27,7 @@ public class save_test : MonoBehaviour {
 	}
 
 	void Start() {
-		thePrincess = GameObject.FindGameObjectWithTag ("Player").GetComponent<Princess> ();
+		vInput = GameObject.FindGameObjectWithTag ("GameController").GetComponent<VirtualInput> ();
 	}
 
 	void Update() {
@@ -42,7 +42,7 @@ public class save_test : MonoBehaviour {
 		Debug.Log ("Saving...");
 		BinaryFormatter bf = new BinaryFormatter();
 		FileStream file = File.Create(Application.persistentDataPath + "/saveTest.dat");
-		PlayerData data = new PlayerData (thePrincess.health, thePrincess.keys) ;
+		PlayerData data = new PlayerData ( vInput.jumpButton, vInput.kickButton, vInput.leapButton, vInput.leftButton, vInput.downButton, vInput.rightButton );
 		bf.Serialize(file, data);
 		file.Close();
 	}
@@ -57,20 +57,32 @@ public class save_test : MonoBehaviour {
 		// so it has to be cast into a bin file.
 		PlayerData data = (PlayerData)bf.Deserialize(file); 
 		file.Close();
-		thePrincess.health = data.health;
-		thePrincess.keys = data.keys;
+		vInput.jumpButton = data.jumpButton;
+		vInput.kickButton = data.kickButton;
+		vInput.leapButton = data.leapButton;
+		vInput.leftButton = data.leftButton;
+		vInput.downButton = data.downButton;
+		vInput.rightButton = data.rightButton;
 	}
 
 	// the container. the [] makes it serialized.
 	[Serializable]
 	class PlayerData
 	{
-		public int health;
-		public int keys;
+		public int jumpButton;
+		public int kickButton;
+		public int leapButton;
+		public int leftButton;
+		public int downButton;
+		public int rightButton;
 
-		public PlayerData( int h, int k ) {
-			health = h;
-			keys = k;
+		public PlayerData( int j, int k, int l, int a, int s, int d ) {
+			jumpButton = j;
+			kickButton = k;
+			leapButton = l;
+			leftButton = a;
+			downButton = s;
+			rightButton = d;
 		}
 	}
 

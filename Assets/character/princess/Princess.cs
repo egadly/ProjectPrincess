@@ -23,11 +23,12 @@ public class Princess: Character{
 
 	// Use this for initialization
 	void Start () {
-		os = GameObject.FindGameObjectWithTag ("Panel").GetComponent<optionsScript>();
+		GameObject panel = GameObject.FindGameObjectWithTag ("Panel");
+		if ( panel ) os = panel.GetComponent<optionsScript>();
+		GameObject hudinstance = GameObject.FindGameObjectWithTag ("HUD");
+		if ( hudinstance ) hud = hudinstance.GetComponent<HUD>();
 		startPosition = transform.position;
 
-
-		health = 20;
 		position = transform.position;
 
 		aerialDrift = 0.0046875f;
@@ -49,11 +50,12 @@ public class Princess: Character{
 
 	// Update is called once per frame
 	void Update () {
-		if (!os.isPaused) {
+		if ( ( os==null || !os.isPaused ) && ( hud==null || !hud.dialogActive ) ) {
 			rigidBody.WakeUp ();
-		//if (!os.isPaused) {
-			if (Input.GetKeyDown (KeyCode.Q))
+			if (Input.GetKeyDown (KeyCode.Q)) {
+				health = 20;
 				position = startPosition;
+			}
 
 			if (currentState == nextState)
 				counterState++;
@@ -147,9 +149,11 @@ public class Princess: Character{
 			if (other != null) {
 				health -= other.gameObject.GetComponent<Enemy> ().collisionDamage;
 				if (other.gameObject.transform.position.x >= position.x) {
+					Instantiate (particles [1], new Vector3 (other.gameObject.transform.position.x - other.bounds.size.x / 2f, position.y, -1f), Quaternion.identity);
 					rightDir = true;
 					velocity.x = -0.1f;
 				} else {
+					Instantiate (particles [1], new Vector3 (other.gameObject.transform.position.x + other.bounds.size.x / 2f, position.y, -1f), Quaternion.identity);
 					rightDir = false;
 					velocity.x = 0.1f;
 				}
@@ -221,7 +225,7 @@ public class Princess: Character{
 			nextState = PrincessStates.Pirouette;
 		if ( VirtualInput.jumpPos )
 			nextState = PrincessStates.Crouch;
-		if (Input.GetKeyDown (KeyCode.L))
+		if ( VirtualInput.leapPos )
 			nextState = PrincessStates.Dive;
 
 	}
@@ -249,7 +253,7 @@ public class Princess: Character{
 		if ( VirtualInput.kickPos ) {
 			nextState = PrincessStates.Pirouette;
 		}
-		if (Input.GetKeyDown (KeyCode.L))
+		if ( VirtualInput.leapPos)
 			nextState = PrincessStates.Dive;
 		if ( VirtualInput.jumpPos ){
 			nextState = PrincessStates.Crouch;
@@ -309,7 +313,10 @@ public class Princess: Character{
 			nextState = PrincessStates.Brace;
 
 		if (platformBelow) {
-			nextState = PrincessStates.Land;
+			if (health == 0)
+				nextState = PrincessStates.Death;
+			else 
+				nextState = PrincessStates.Land;
 		}
 
 
@@ -548,6 +555,8 @@ public class Princess: Character{
 
 		if (health > 0)
 			nextState = PrincessStates.Rise;
+		if (!platformBelow)
+			nextState = PrincessStates.Reel;
 	}
 
 	void destroyChildren() {

@@ -27,6 +27,7 @@ public class Character : MonoBehaviour {
 	public GameObject[] particles = new GameObject[2];
 
 	protected optionsScript os;
+	protected HUD hud;
 
 	protected void physAdjust() {
 

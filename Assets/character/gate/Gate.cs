@@ -18,7 +18,10 @@ public class Gate : Enemy {
 
 	// Use this for initialization
 	void Start () {
-		os = GameObject.FindGameObjectWithTag ("Panel").GetComponent<optionsScript>();
+		GameObject panel = GameObject.FindGameObjectWithTag ("Panel");
+		if ( panel ) os = panel.GetComponent<optionsScript>();
+		GameObject hudinstance = GameObject.FindGameObjectWithTag ("HUD");
+		if ( hudinstance ) hud = hudinstance.GetComponent<HUD>();
 		theCamera = GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<GameCamera> ();
 		thePrincess = GameObject.FindGameObjectWithTag ("Player").GetComponent<Princess> ();
 		counterCycle = startCycle;
@@ -33,13 +36,15 @@ public class Gate : Enemy {
 	
 	// Update is called once per frame
 	void Update () {
-		if (!os.isPaused) {
+		if (( os==null || !os.isPaused ) && ( hud==null || !hud.dialogActive )) {
 			counterLife = (counterLife + 1) % counterCycle;
 			counterShake = Mathf.Max (--counterShake, 0);
 
 			if (master == null) {
-				if (counterLife == 0)
+				if (counterLife == 0) {
+					counterShake = 6;
 					isRising = !isRising;
+				}
 				if (counterLife != 0 && velocity.y == 0 && Mathf.Abs (position.x - thePrincess.position.x) < 1f && isRising) {
 					counterLife = 0;
 					isRising = false;
@@ -92,6 +97,12 @@ public class Gate : Enemy {
 			if (counterLife == 0)
 				counterCycle = Mathf.Min (startCycle, counterCycle + 5);
 			if (ifCollision (1 << LayerMask.NameToLayer ("PlayerHitboxes"))) {
+				if (counterLife % 10 == 0) {
+					if (thePrincess.position.x > position.x)
+						Instantiate (particles [1], new Vector3 (position.x + gameObject.GetComponent<BoxCollider2D> ().size.x / 2f, thePrincess.position.y, -1f), Quaternion.identity);
+					else
+						Instantiate (particles [1], new Vector3 (position.x - gameObject.GetComponent<BoxCollider2D> ().size.x / 2f, thePrincess.position.y, -1f), Quaternion.identity);
+				}
 				counterShake = 1;
 				counterCycle = Mathf.Max (counterCycle - 1, 30);
 			} 

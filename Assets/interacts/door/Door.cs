@@ -1,0 +1,92 @@
+﻿using UnityEngine;
+using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
+using System.Collections;
+
+public class Door : Interact {
+
+	HUD hud;
+
+	public int numKeys;
+	public bool isLoading = false;
+
+	public int score = 0;
+	public int fullScore;
+	public int counterLife = 0;
+	public int timeLimitInSec = 300;
+	private int timeLimitInFrames;
+
+	Princess thePrincess;
+	public string nextScene;
+
+	// Use this for initialization
+	void Start () {
+		position = transform.position;
+
+		GameObject hudInstance = GameObject.FindGameObjectWithTag ("HUD");
+		if (hudInstance)
+			hud = hudInstance.GetComponent<HUD> ();
+
+		GameObject[] keys = GameObject.FindGameObjectsWithTag ("Key");
+		numKeys = keys.Length;
+
+		thePrincess = GameObject.FindGameObjectWithTag ("Player").GetComponent<Princess> ();
+
+		timeLimitInFrames = timeLimitInSec * 60;
+	
+	}
+	
+	// Update is called once per frame
+	void Update () {
+
+		if ( !hud.dialogActive ) counterLife++;
+		fullScore = (int)Mathf.Max  ((score + (1000 * (timeLimitInFrames - counterLife)/(float)timeLimitInFrames) + 100 * thePrincess.health ) , 0);
+		hud.score = "" + fullScore;
+		hud.gameTime = counterLife;
+
+		if ( ifCollision (1<<LayerMask.NameToLayer ("Player")) ) {
+			if ( nextScene == null || nextScene == "" ) {
+				if (thePrincess.keys == numKeys) {
+					if (VirtualInput.downPos)
+						hud.createDialog ("You've gotten all the keys!\nYou're final score is " + fullScore + "\nLoading Next Level......", -1);
+					if (hud.dialogActive && hud.currentText == hud.givenText && !isLoading) {
+						#if UNITY_EDITOR
+						EditorSceneManager.LoadSceneAsync (EditorSceneManager.GetActiveScene ().buildIndex + 1);
+						#else
+						SceneManager.LoadSceneAsync( SceneManager.GetActiveScene ().buildIndex + 1 );
+						#endif
+						isLoading = true;
+					}
+				} else if (VirtualInput.downPos) {
+					hud.createDialog ("You need more keys! Numbnuts!", 1);
+					if (hud.dialogActive && hud.givenText == hud.currentText)
+						hud.changeDialog ("You need more keys! Numbnuts!\nQuit pressing DOWN while you're at it!");
+				}
+			} else {
+				if (VirtualInput.downPos) 
+					hud.createDialog ("Loading Next Level......", -1);
+				if (hud.dialogActive && hud.currentText == hud.givenText && !isLoading) {
+					#if UNITY_EDITOR
+					EditorSceneManager.LoadSceneAsync ( nextScene );
+					#else
+					SceneManager.LoadSceneAsync( nextScene );
+					#endif
+					isLoading = true;
+				}
+			}
+		
+		}
+		if (thePrincess.health == 0 && thePrincess.counterState >= 60) {
+			if ( (thePrincess.counterState++) == 60 ) hud.createDialog ("Haha! She Dead! Reloading Level........", -1);
+			if ( hud.dialogActive && hud.currentText == hud.givenText && !isLoading ) {
+					#if UNITY_EDITOR
+					EditorSceneManager.LoadSceneAsync (EditorSceneManager.GetActiveScene ().name);
+					#else
+					SceneManager.LoadSceneAsync( SceneManager.GetActiveScene().name );
+					#endif
+					isLoading = true;
+				}
+		}
+
+	}
+}
