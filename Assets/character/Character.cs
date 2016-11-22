@@ -24,7 +24,7 @@ public class Character : MonoBehaviour {
 	public SpriteRenderer spriteRenderer;
 	public Rigidbody2D rigidBody;
 
-	public GameObject[] particles = new GameObject[2];
+	public GameObject[] particles = new GameObject[3];
 
 	public Options os;
 	protected HUD hud;
