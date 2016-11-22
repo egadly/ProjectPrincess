@@ -31,6 +31,8 @@ public class HUD : MonoBehaviour {
 	public int gameTime;
 	public string score;
 
+	private Door door;
+
 
 	// Use this for initialization
 	void Start () {
@@ -38,31 +40,36 @@ public class HUD : MonoBehaviour {
 
 		//Hearts
 		princess = GameObject.FindGameObjectWithTag ("Player").GetComponent<Princess> ();
-
-		hearts = new GameObject[maximumHealth];
-		timer = Instantiate (timer, transform) as GameObject;
+		door = GameObject.FindGameObjectWithTag ("Door").GetComponent<Door> ();
 
 		scale = Screen.height / 360f;
 
-		timer.GetComponent<RectTransform> ().localScale = new Vector3 (timer.GetComponent<RectTransform> ().localScale.x * scale, timer.GetComponent<RectTransform> ().localScale.y * scale, 1f);
 
-		for ( int i = 0; i < maximumHealth; i++ ) {
-			//Create the game objects
-			hearts[i] = Instantiate( heart, this.transform ) as GameObject;
-			hearts[i].GetComponent<RectTransform> ().localScale = new Vector3(scale, scale, 1f);
-			//Position it in the scene
-			hearts[i].transform.position = new Vector3((i* ((40f*scale)+(10f*scale))) + ((20f*scale)+(10f*scale)), (20f*scale), 0);
-		}
-		timer.transform.position = new Vector3 (Screen.width - (125f * scale), ( 45f * scale), 0);
+		if (door.nextScene == null || door.nextScene == "") {
+			timer = Instantiate (timer, transform) as GameObject;
+			timer.GetComponent<RectTransform> ().localScale = new Vector3 (timer.GetComponent<RectTransform> ().localScale.x * scale, timer.GetComponent<RectTransform> ().localScale.y * scale, 1f);
+			timer.transform.position = new Vector3 (Screen.width - (125f * scale), (45f * scale), 0);
+				
+			hearts = new GameObject[maximumHealth];
+			for (int i = 0; i < maximumHealth; i++) {
+				//Create the game objects
+				hearts [i] = Instantiate (heart, this.transform) as GameObject;
+				hearts [i].GetComponent<RectTransform> ().localScale = new Vector3 (scale, scale, 1f);
+				//Position it in the scene
+				hearts [i].transform.position = new Vector3 ((i * ((40f * scale) + (10f * scale))) + ((20f * scale) + (10f * scale)), (20f * scale), 0);
+			}
+		} else
+			hearts = null;
+
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		counterLife = (counterLife + 1);
 		//get player current health
-		if (savedHealth != princess.health) updateHealth ();
+		if (hearts != null && savedHealth != princess.health) updateHealth ();
 		if (dialogActive) updateDialog ();
-		updateTimer ();
+		if ( timer != null )if ( timer != null ) updateTimer ();
 
 	
 	}
@@ -89,7 +96,7 @@ public class HUD : MonoBehaviour {
 	}
 
 	void updateDialog() {
-		if ( (givenText == currentText) &&  ((dialogKiller==0&&Input.anyKeyDown) || (dialogKiller == 1&&VirtualInput.jumpPos) ) ) {
+		if ( ((dialogKiller==0&&Input.anyKeyDown) || (givenText == currentText&&dialogKiller == 1&&VirtualInput.jumpPos) ) ) {
 			Destroy (currentBox);
 			Destroy (currentMessage);
 			Destroy (currentContinue);

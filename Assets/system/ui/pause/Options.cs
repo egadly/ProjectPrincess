@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 
-public class optionsScript: MonoBehaviour {
+public class Options : MonoBehaviour {
 
 	public EventSystem eventSystem;
     public GameObject selectedObject;

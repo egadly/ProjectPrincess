@@ -19,7 +19,7 @@ public class Gate : Enemy {
 	// Use this for initialization
 	void Start () {
 		GameObject panel = GameObject.FindGameObjectWithTag ("Panel");
-		if ( panel ) os = panel.GetComponent<optionsScript>();
+		if ( panel ) os = panel.GetComponent<Options>();
 		GameObject hudinstance = GameObject.FindGameObjectWithTag ("HUD");
 		if ( hudinstance ) hud = hudinstance.GetComponent<HUD>();
 		theCamera = GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<GameCamera> ();
