@@ -15,9 +15,9 @@ public class Hazard : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (!pause.isPaused) {
-			counterLife = (counterLife + 1) % 2;
+			counterLife = (counterLife + 1) % 3 ;
 			if (particle != null && counterLife == 0)
-				Instantiate (particle, transform.position + new Vector3 (Random.Range (-.1f, .1f), 0, 0), Quaternion.identity);
+				Instantiate (particle, transform.position+ new Vector3 (0, .25f, 0) + new Vector3 (Random.Range (-.1f, .1f), 0, 0), Quaternion.identity);
 		}
 	}
 }
