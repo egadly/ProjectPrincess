@@ -21,6 +21,10 @@ public class Mouse : Enemy {
 		GameObject hudinstance = GameObject.FindGameObjectWithTag ("HUD");
 		if ( hudinstance ) hud = hudinstance.GetComponent<HUD>();
 
+		audioSources = gameObject.GetComponents<AudioSource>();
+		currentVolume = globalVolume;
+		changeVolume (currentVolume);
+
 		position = transform.position;
 
 		gravity = 0.0125f;
@@ -73,8 +77,12 @@ public class Mouse : Enemy {
 				break;
 			}
 
-			if (justLanded)
+			if ( (int)Random.Range(0,480) == 0 && currentState != MouseStates.Dead ) audioSources [0].Play ();
+
+			if (justLanded) {
+				audioSources [1].Play ();
 				Instantiate (particles [0], position, Quaternion.identity);
+			}
 
 			//Test Hits
 			if (currentState != MouseStates.Hitstun && currentState != MouseStates.Dead)
@@ -86,30 +94,40 @@ public class Mouse : Enemy {
 			if (counterShake == 0)
 				transform.position = position;
 			else
-				transform.position = new Vector3 (position.x + Random.Range (-.25f, .25f), position.y + Random.Range (-.25f, .25f), position.z); 	
+				transform.position = new Vector3 (position.x + Random.Range (-.25f, .25f), position.y + Random.Range (-.25f, .25f), position.z); 
+
+			if (currentVolume != globalVolume) {
+				currentVolume = globalVolume;
+				changeVolume (currentVolume);
+			}
 		}
 	}
 
 	void enemyCollisionCheck() {
-			Collider2D other = ifCollision (1 << LayerMask.NameToLayer ("PlayerHitboxes"));
-			if (other != null) {
-				health -= other.gameObject.GetComponent<Hitbox> ().damage;
-				if (other.gameObject.transform.position.x >= position.x) {
-					Instantiate (particles [1], new Vector3 (other.gameObject.transform.position.x - other.bounds.size.x / 2f, position.y, -1f), Quaternion.identity);
-					rightDir = true;
-					velocity.x = -maxHspeed;
-				} else {
-					Instantiate (particles [1], new Vector3 (other.gameObject.transform.position.x + other.bounds.size.x / 2f, position.y, -1f), Quaternion.identity);
-					rightDir = false;
-					velocity.x = maxHspeed;
-				}
-			if ( health<= 0 ) velocity.y = 1f;
-			nextState = MouseStates.Hitstun;
+		Collider2D other = ifCollision (1 << LayerMask.NameToLayer ("PlayerHitboxes"));
+		if (other != null ) {
+			audioSources [2].volume = globalVolume * .5f;
+			audioSources [2].Play ();
+			health -= other.gameObject.GetComponent<Hitbox> ().damage;
+			if (health <= 0)
+				//GameObject.FindGameObjectWithTag ("Player").GetComponent<Princess> ().health++;
+				GameObject.FindGameObjectWithTag ("Door").GetComponent<Door> ().score += 100;
+			if (other.gameObject.transform.position.x >= position.x) {
+				if ( other.gameObject.GetComponent<Hitbox>().damage>0 ) Instantiate (particles [1], new Vector3 (other.gameObject.transform.position.x - other.bounds.size.x / 2f, position.y, -1f), Quaternion.identity);
+				rightDir = true;
+				velocity.x = -maxHspeed;
+			} else {
+				if ( other.gameObject.GetComponent<Hitbox>().damage>0 ) Instantiate (particles [1], new Vector3 (other.gameObject.transform.position.x + other.bounds.size.x / 2f, position.y, -1f), Quaternion.identity);
+				rightDir = false;
+				velocity.x = maxHspeed;
 			}
+		if ( health<= 0 ) velocity.y = 1f;
+		nextState = MouseStates.Hitstun;
+		}
 	}
 
 	void stateIdle() {
-		if (counterState == stateLength) {
+		if (counterState >= stateLength) {
 			Instantiate (particles [0], position, Quaternion.identity);
 			nextState = MouseStates.Run;
 			if (platformLeft)
@@ -132,8 +150,9 @@ public class Mouse : Enemy {
 	}
 
 	void stateRun() {
-
-		if (counterState == stateLength) {
+		if (counterState % 12 == 0)
+			audioSources [1].Play ();
+		if (counterState >= stateLength) {
 			nextState = MouseStates.Idle;
 		}
 

@@ -10,9 +10,15 @@ public class Switch : Interact {
 	public bool playerActive = true;
 	public bool enemyActive = true;
 	public bool hitboxActive = false;
+	public bool ehitboxActive = false;
+
+	public Sprite activeSprite;
+	public Sprite idleSprite;
+	public SpriteRenderer spriteRenderer;
 
 	// Use this for initialization
 	void Start () {
+		spriteRenderer = gameObject.GetComponent<SpriteRenderer> ();
 		position = transform.position;
 	
 	}
@@ -28,6 +34,12 @@ public class Switch : Interact {
 				isActive = true;
 			if (hitboxActive && ifCollision( 1 << LayerMask.NameToLayer("PlayerHitboxes")) )
 				isActive = true;
+			if (ehitboxActive && ifCollision( 1 << LayerMask.NameToLayer("EnemyHitboxes")) )
+				isActive = true;
+			if (isActive)
+				spriteRenderer.sprite = activeSprite;
+			else
+				spriteRenderer.sprite = idleSprite;
 		} else {
 			
 			prevActive = curActive;
@@ -39,6 +51,13 @@ public class Switch : Interact {
 				curActive = true;
 			if (hitboxActive && ifCollision( 1 << LayerMask.NameToLayer("PlayerHitboxes")) )
 				curActive = true;
+			if (ehitboxActive && ifCollision( 1 << LayerMask.NameToLayer("EnemyHitboxes")) )
+				curActive = true;
+
+			if (curActive)
+				spriteRenderer.sprite = activeSprite;
+			else
+				spriteRenderer.sprite = idleSprite;
 
 			if (!prevActive && curActive)
 				isActive = !isActive;

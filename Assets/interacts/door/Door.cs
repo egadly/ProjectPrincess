@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEditor.SceneManagement;
 using UnityEngine.SceneManagement;
 using System.Collections;
 
@@ -76,14 +75,10 @@ public class Door : Interact {
 		
 			}
 		}
-		if (thePrincess.health == 0 && thePrincess.counterState >= 60) {
+		if (thePrincess.health <= 0 && thePrincess.counterState >= 60) {
 			if ( (thePrincess.counterState++) == 60 ) hud.createDialog ("Haha! She Dead! Reloading Level........", -1);
 			if ( hud.dialogActive && hud.currentText == hud.givenText && !isLoading ) {
-					#if UNITY_EDITOR
-					EditorSceneManager.LoadSceneAsync (EditorSceneManager.GetActiveScene ().name);
-					#else
 					SceneManager.LoadSceneAsync( SceneManager.GetActiveScene().name );
-					#endif
 					isLoading = true;
 				}
 		}

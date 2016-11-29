@@ -8,6 +8,7 @@ public class Options : MonoBehaviour {
 	public EventSystem eventSystem;
     public GameObject selectedObject;
 	public VirtualInput input;
+	public SaveManager save;
 
 	public GameObject pausePanel;
 	public GameObject optionsPanel;
@@ -21,6 +22,7 @@ public class Options : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		save = GameObject.FindGameObjectWithTag ("Save").GetComponent<SaveManager> ();
 		input = GameObject.FindGameObjectWithTag ("GameController").GetComponent<VirtualInput> ();
 		disabler = GetComponentInChildren<Canvas> ();
 		if (pausePanel != null)
@@ -66,6 +68,7 @@ public class Options : MonoBehaviour {
 			disabler.enabled = false;
 			isPaused = false;
 			Time.timeScale = 1.0f;
+			save.Save ();
 		}
 	}
 

@@ -7,7 +7,7 @@ public class Particle : MonoBehaviour {
 	Vector3 position;
 	public Vector3 velocity;
 	public bool ifShake = false;
-	int counterLife;
+	public int counterLife;
 	public int lengthLife = 30;
 	Options pause;
 	HUD hud;
@@ -17,7 +17,7 @@ public class Particle : MonoBehaviour {
 		pause = GameObject.FindGameObjectWithTag ("Panel").GetComponent<Options> ();
 		hud = GameObject.FindGameObjectWithTag ("HUD").GetComponent<HUD> ();
 		position = transform.position;
-		if ( velocity != Vector3.zero ) velocity = new Vector3 ( Random.Range (-.1f, .1f), velocity.y, position.z);
+		if ( velocity != Vector3.zero ) velocity = new Vector3 ( Random.Range (-.1f, .1f), velocity.y, 0f);
 		startPosition = position;
 		counterLife = 0;
 	
@@ -38,11 +38,10 @@ public class Particle : MonoBehaviour {
 			if (position.x < startPosition.x)
 				velocity.x += .05f;
 
-
 			if (!ifShake)
 				transform.position = position;
 			else
-				transform.position = new Vector3 (position.x + Random.Range (-.25f, .25f), position.y + Random.Range (-.25f, .25f), position.z); 
+				transform.position = new Vector3 (position.x + Random.Range (-.25f, .25f), position.y + Random.Range (-.25f, .25f), -1f); 
 		}
 	
 	}
