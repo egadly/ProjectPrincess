@@ -4,6 +4,7 @@ using System.Collections;
 public class Hitbox : MonoBehaviour {
 
 	public int counterLife;
+	public int lengthLife = 30;
 	public int damage = 1;
 
 	// Use this for initialization
@@ -16,7 +17,13 @@ public class Hitbox : MonoBehaviour {
 	void Update () {
 		counterLife++;
 		transform.position = transform.parent.transform.position;
-		gameObject.GetComponent<SpriteRenderer> ().flipX = !transform.parent.GetComponent<Princess> ().rightDir;
-		gameObject.GetComponent<SpriteRenderer> ().color = new Color (1f, 1f, 1f, ( 42f - counterLife )/84f + 0.25f);
+		SpriteRenderer spriteRenderer = gameObject.GetComponent<SpriteRenderer> ();
+		if ( spriteRenderer ) {
+			spriteRenderer.flipX = !transform.parent.GetComponent<Princess> ().rightDir;
+			float trans= ((float)(lengthLife-counterLife)/ (float)lengthLife);
+			spriteRenderer.color = new Color (1f, 1f, 1f, 3f*trans*trans - 2f*trans*trans*trans );
+		}
+		if (counterLife == lengthLife)
+			Destroy (gameObject);
 	}
 }

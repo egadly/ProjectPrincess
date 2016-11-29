@@ -23,8 +23,13 @@ public class Character : MonoBehaviour {
 
 	public SpriteRenderer spriteRenderer;
 	public Rigidbody2D rigidBody;
+	public static float globalVolume = 1;
+	public float currentVolume;
+	public float volumeModifier = 1f;
 
-	public GameObject[] particles = new GameObject[2];
+	public AudioSource[] audioSources;
+
+	public GameObject[] particles = new GameObject[3];
 
 	public Options os;
 	protected HUD hud;
@@ -56,6 +61,10 @@ public class Character : MonoBehaviour {
 		}
 
 		adjacentPlatformCheck ( col, platforms );
+		if ( (platformBelow&&velocity.y<0) || (platformAbove&&velocity.y>0))
+			velocity.y = 0;
+		/*if (platformRight || platformLeft)
+			velocity.x = 0;*/
 
 		if (platformBelow != null && !prevLanded)
 			justLanded = true;
@@ -79,6 +88,7 @@ public class Character : MonoBehaviour {
 			} else {
 				position.x = other.transform.position.x + other.bounds.extents.x + col.size.x / 2f +.05f;
 				velocity.x = 0;
+
 			}
 		}
 
@@ -94,10 +104,10 @@ public class Character : MonoBehaviour {
 		if ( other != null ) {
 			if (other.transform.position.y < position.y) {
 				position.y = other.transform.position.y + other.bounds.size.y / 2f + col.size.y / 2f - col.offset.y;
-				velocity.y = 0;
+				if ( velocity.y < 0 ) velocity.y = 0;
 			} else {
 				position.y = other.transform.position.y - other.bounds.size.y / 2f - col.size.y / 2f + col.offset.y;
-				velocity.y = 0;
+				if ( velocity.y > 0 ) velocity.y = 0;
 			}
 		}
 	}
@@ -106,7 +116,7 @@ public class Character : MonoBehaviour {
 
 		platformBelow = Physics2D.OverlapArea (
 			new Vector2 (position.x - col.size.x / 4f, position.y - col.size.y / 2f + col.offset.y),
-			new Vector2 (position.x + col.size.x / 4f, position.y - col.size.y / 2f + col.offset.y- 0.05f), platforms);
+			new Vector2 (position.x + col.size.x / 4f, position.y - col.size.y / 2f + col.offset.y- 0.04f), platforms);
 		platformRight= Physics2D.OverlapArea (
 			new Vector2 (position.x + col.size.x / 2f,         position.y + col.size.y / 4f + col.offset.y),
 			new Vector2 (position.x + col.size.x / 2f + 0.05f, position.y - col.size.y / 4f + col.offset.y), platforms);
@@ -149,6 +159,16 @@ public class Character : MonoBehaviour {
 			velocity.x += direction * frictionC * runAcceleration;
 		} else
 			velocity.x += direction * aerialDrift;
+	}
+
+	public void changeGlobalVolume( float volume ) {
+		globalVolume = volume;
+	}
+
+	public void changeVolume( float volume ) {
+		for (int i = 0; i < audioSources.GetLength(0); i++) {
+			audioSources [i].volume = volume * volumeModifier;
+		}
 	}
 
 

@@ -6,7 +6,6 @@ using System.Collections;
 using System;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
-using UnityEditor.SceneManagement;
 using UnityEngine.SceneManagement;
 
 // English spelling for Behavior
@@ -15,6 +14,7 @@ public class SaveManager : MonoBehaviour {
 	public SaveManager test;
 	public VirtualInput vInput;
 	public PlayerData data;
+	public AudioSource music;
 
 	// makes certain the data is the right(current) data
 	// as opposed to onStart(), (which comes afterwards) 
@@ -31,7 +31,11 @@ public class SaveManager : MonoBehaviour {
 
 	void Start() {
 		vInput = GameObject.FindGameObjectWithTag ("GameController").GetComponent<VirtualInput> ();
+<<<<<<< HEAD
+		music = GameObject.FindGameObjectWithTag ("Music").GetComponent<AudioSource> ();
+=======
 		
+>>>>>>> refs/remotes/origin/master
 		Load ();
 	}
 
@@ -45,8 +49,8 @@ public class SaveManager : MonoBehaviour {
 	// In order to write the file…
 	public void Save( int score = 0 ){
 		Debug.Log ("Saving...");
-		data.scores[SceneManager.GetActiveScene().buildIndex] = Mathf.Max( score, data.scores[EditorSceneManager.GetActiveScene().buildIndex] );
-		data = new PlayerData ( data.scores, vInput.jumpButton, vInput.kickButton, vInput.leapButton, vInput.leftButton, vInput.downButton, vInput.rightButton );
+		data.scores[SceneManager.GetActiveScene().buildIndex] = Mathf.Max( score, data.scores[SceneManager.GetActiveScene().buildIndex] );
+		data = new PlayerData ( data.scores, music.volume, Character.globalVolume, vInput.jumpButton, vInput.kickButton, vInput.leapButton, vInput.leftButton, vInput.downButton, vInput.rightButton );
 		BinaryFormatter bf = new BinaryFormatter();
 		FileStream file = File.Create(Application.persistentDataPath + "/saveTest.dat");
 		bf.Serialize(file, data);
@@ -76,7 +80,15 @@ public class SaveManager : MonoBehaviour {
         }
 		// when the serialized data is pulled fr container, the Unity will expect a generic file
 		// so it has to be cast into a bin file.
+<<<<<<< HEAD
+		PlayerData tempData = (PlayerData)bf.Deserialize(file);
+		data = new PlayerData (tempData.scores, tempData.musVolume, tempData.sfxVolume, tempData.jumpButton, tempData.kickButton, tempData.leapButton, tempData.leftButton, tempData.downButton, tempData.rightButton);
+		file.Close();
+		music.volume = data.musVolume;
+		Character.globalVolume = data.sfxVolume;
+=======
 		
+>>>>>>> refs/remotes/origin/master
 		vInput.jumpButton = data.jumpButton;
 		vInput.kickButton = data.kickButton;
 		vInput.leapButton = data.leapButton;
@@ -96,16 +108,20 @@ public class SaveManager : MonoBehaviour {
 		public int downButton;
 		public int rightButton;
 		public int[] scores;
+		public float sfxVolume;
+		public float musVolume;
 
-		public PlayerData( int[] sc, int j = 106, int k=107, int l=108, int a=97, int s=115, int d=100 ) {
+		public PlayerData( int[] sc, float mus = 1, float sfx = 1, int j = 106, int k=107, int l=108, int a=97, int s=115, int d=100 ) {
 			jumpButton = j;
 			kickButton = k;
 			leapButton = l;
 			leftButton = a;
 			downButton = s;
 			rightButton = d; 
-			if ( sc != null && sc.Length == EditorSceneManager.sceneCountInBuildSettings ) scores = sc;
+			if ( sc != null && sc.Length == SceneManager.sceneCountInBuildSettings ) scores = sc;
 			else scores = new int[SceneManager.sceneCountInBuildSettings];
+			sfxVolume = sfx;
+			musVolume = mus;
 		}
 	}
 
