@@ -31,7 +31,11 @@ public class SaveManager : MonoBehaviour {
 
 	void Start() {
 		vInput = GameObject.FindGameObjectWithTag ("GameController").GetComponent<VirtualInput> ();
+<<<<<<< HEAD
 		music = GameObject.FindGameObjectWithTag ("Music").GetComponent<AudioSource> ();
+=======
+		
+>>>>>>> refs/remotes/origin/master
 		Load ();
 	}
 
@@ -58,14 +62,33 @@ public class SaveManager : MonoBehaviour {
 		Debug.Log ("Loading...");
 		// if file DNE, a default C# exception will display
 		BinaryFormatter bf = new BinaryFormatter();
-		FileStream file = File.Open(Application.persistentDataPath + "/saveTest.dat", FileMode.Open);
+        try
+        {
+            FileStream file = File.Open(Application.persistentDataPath + "/saveTest.dat", FileMode.Open);
+            
+            PlayerData tempData = (PlayerData)bf.Deserialize(file);
+            data = new PlayerData(tempData.scores, tempData.jumpButton, tempData.kickButton, tempData.leapButton, tempData.leftButton, tempData.downButton, tempData.rightButton);
+            file.Close();
+            
+        }
+        catch (IOException e)
+        {
+            Debug.Log("No file found");
+            data = new PlayerData(new int[SceneManager.sceneCountInBuildSettings], vInput.jumpButton, vInput.kickButton, vInput.leapButton, vInput.leftButton, vInput.downButton, vInput.rightButton);
+
+
+        }
 		// when the serialized data is pulled fr container, the Unity will expect a generic file
 		// so it has to be cast into a bin file.
+<<<<<<< HEAD
 		PlayerData tempData = (PlayerData)bf.Deserialize(file);
 		data = new PlayerData (tempData.scores, tempData.musVolume, tempData.sfxVolume, tempData.jumpButton, tempData.kickButton, tempData.leapButton, tempData.leftButton, tempData.downButton, tempData.rightButton);
 		file.Close();
 		music.volume = data.musVolume;
 		Character.globalVolume = data.sfxVolume;
+=======
+		
+>>>>>>> refs/remotes/origin/master
 		vInput.jumpButton = data.jumpButton;
 		vInput.kickButton = data.kickButton;
 		vInput.leapButton = data.leapButton;
