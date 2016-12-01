@@ -117,7 +117,7 @@ public class SaveManager : MonoBehaviour {
     public void ClearSave()
     {
         data = new PlayerData(new int[SceneManager.sceneCountInBuildSettings], 1f, 1f, vInput.jumpButton, vInput.kickButton, vInput.leapButton, vInput.leftButton, vInput.downButton, vInput.rightButton);
-
+        Save();
     }
     public void LoadLatestLevel()
     {
@@ -128,6 +128,7 @@ public class SaveManager : MonoBehaviour {
             {
                 if (load == true)
                 {
+                    
                     SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
                 }
             }
@@ -136,6 +137,7 @@ public class SaveManager : MonoBehaviour {
                 load = true;
             }
         }
+        
         SceneManager.LoadSceneAsync(1);
     }
     // Should be it.
