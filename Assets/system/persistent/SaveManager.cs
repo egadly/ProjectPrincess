@@ -54,6 +54,11 @@ public class SaveManager : MonoBehaviour {
 		file.Close();
 	}
 
+	public void newSave() {
+		data = new PlayerData ( new int[SceneManager.sceneCountInBuildSettings], music.volume, Character.globalVolume, vInput.jumpButton, vInput.kickButton, vInput.leapButton, vInput.leftButton, vInput.downButton, vInput.rightButton );
+		Save ();
+	}
+
 	// In order to read the file…
 	public void Load(){
 		Debug.Log ("Loading...");
@@ -70,8 +75,8 @@ public class SaveManager : MonoBehaviour {
         }
         catch (IOException e)
         {
-            Debug.Log("No file found");
-			data = new PlayerData(new int[SceneManager.sceneCountInBuildSettings], music.volume, Character.globalVolume, vInput.jumpButton, vInput.kickButton, vInput.leapButton, vInput.leftButton, vInput.downButton, vInput.rightButton );
+			Debug.Log("Error: " + e.ToString() );
+			data = new PlayerData (new int[SceneManager.sceneCountInBuildSettings]);
 
         }
 		// when the serialized data is pulled fr container, the Unity will expect a generic file

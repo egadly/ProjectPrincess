@@ -7,6 +7,9 @@ public class Switch : Interact {
 	public bool prevActive = false;
 	public bool curActive = false;
 	public bool isToggle = false;
+	public bool isTimer;
+	public int lengthTimer;
+	public int counterTimer;
 	public bool playerActive = true;
 	public bool enemyActive = true;
 	public bool hitboxActive = false;
@@ -32,16 +35,15 @@ public class Switch : Interact {
 				isActive = true;
 			if (enemyActive && ifCollision( 1 << LayerMask.NameToLayer("Enemies")) )
 				isActive = true;
-			if (hitboxActive && ifCollision( 1 << LayerMask.NameToLayer("PlayerHitboxes")) )
-				isActive = true;
+			Collider2D other = ifCollision (1 << LayerMask.NameToLayer ("PlayerHitboxes"));
+			if (hitboxActive && other) {
+				if ( other.gameObject.GetComponent<Hitbox>().damage > 1 ) curActive = true;
+			}
 			if (ehitboxActive && ifCollision( 1 << LayerMask.NameToLayer("EnemyHitboxes")) )
 				isActive = true;
-			if (isActive)
-				spriteRenderer.sprite = activeSprite;
-			else
-				spriteRenderer.sprite = idleSprite;
 		} else {
-			
+
+			counterTimer = Mathf.Max (counterTimer - 1, 0);
 			prevActive = curActive;
 
 			curActive = false;
@@ -49,18 +51,33 @@ public class Switch : Interact {
 				curActive = true;
 			if (enemyActive && ifCollision( 1 << LayerMask.NameToLayer("Enemies")) )
 				curActive = true;
-			if (hitboxActive && ifCollision( 1 << LayerMask.NameToLayer("PlayerHitboxes")) )
-				curActive = true;
+			Collider2D other = ifCollision (1 << LayerMask.NameToLayer ("PlayerHitboxes"));
+			if (hitboxActive && other) {
+				if ( other.gameObject.GetComponent<Hitbox>().damage > 1 ) curActive = true;
+			}
 			if (ehitboxActive && ifCollision( 1 << LayerMask.NameToLayer("EnemyHitboxes")) )
 				curActive = true;
 
-			if (curActive)
-				spriteRenderer.sprite = activeSprite;
-			else
-				spriteRenderer.sprite = idleSprite;
+			if (isTimer && counterTimer == 0)
+				isActive = false;
 
-			if (!prevActive && curActive)
+			if (!prevActive && curActive) {
 				isActive = !isActive;
+				if (isActive && isTimer)
+					counterTimer = lengthTimer;
+			}
+
+			if (hitboxActive) {
+				if (isActive)
+					spriteRenderer.sprite = activeSprite;
+				else
+					spriteRenderer.sprite = idleSprite;
+			} else {
+				if (curActive)
+					spriteRenderer.sprite = activeSprite;
+				else
+					spriteRenderer.sprite = idleSprite;
+			}
 			
 		}
 
