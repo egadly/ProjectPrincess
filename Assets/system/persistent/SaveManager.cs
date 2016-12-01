@@ -114,7 +114,31 @@ public class SaveManager : MonoBehaviour {
 		}
 	}
 
-	// Should be it.
+    public void ClearSave()
+    {
+        data = new PlayerData(new int[SceneManager.sceneCountInBuildSettings], 1f, 1f, vInput.jumpButton, vInput.kickButton, vInput.leapButton, vInput.leftButton, vInput.downButton, vInput.rightButton);
+
+    }
+    public void LoadLatestLevel()
+    {
+        bool load = false;
+        for (int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
+        {
+            if (data.scores[i] == 0)
+            {
+                if (load == true)
+                {
+                    SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
+                }
+            }
+            else
+            {
+                load = true;
+            }
+        }
+        SceneManager.LoadSceneAsync(1);
+    }
+    // Should be it.
 
 
 }
