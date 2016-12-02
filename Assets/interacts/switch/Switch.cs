@@ -11,6 +11,9 @@ public class Switch : Interact {
 	public bool enemyActive = true;
 	public bool hitboxActive = false;
 	public bool ehitboxActive = false;
+    public string message = "";
+
+    HUD hud;
 
 	public Sprite activeSprite;
 	public Sprite idleSprite;
@@ -20,8 +23,12 @@ public class Switch : Interact {
 	void Start () {
 		spriteRenderer = gameObject.GetComponent<SpriteRenderer> ();
 		position = transform.position;
-	
-	}
+
+        GameObject hudInstance = GameObject.FindGameObjectWithTag("HUD");
+        if (hudInstance)
+            hud = hudInstance.GetComponent<HUD>();
+
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -59,12 +66,14 @@ public class Switch : Interact {
 			else
 				spriteRenderer.sprite = idleSprite;
 
-			if (!prevActive && curActive)
-				isActive = !isActive;
-			
-		}
-
-
-	
+            if (!prevActive && curActive)
+            {
+                isActive = !isActive;
+                if (message != "")
+                {
+                    hud.createDialog(message, 1);
+                }
+            }
+		}	
 	}
 }
