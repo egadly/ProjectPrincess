@@ -219,6 +219,7 @@ public class Princess: Character{
 	void collectCollisionCheck() {
 		Collider2D other = ifCollision (1 << LayerMask.NameToLayer ("Collects"));
 		if (other != null) {
+			audioSources [5].Play ();
 			switch (other.gameObject.tag) {
 			case "Key":
 				keys++;

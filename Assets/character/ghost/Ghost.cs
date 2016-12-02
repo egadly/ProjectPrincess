@@ -4,6 +4,7 @@ using System.Collections;
 public class Ghost : Enemy {
 
 	public GameObject target;
+	public GameObject otherTarget;
 	public bool ifChase;
 	public int counterChase;
 	public int lengthChase = 120;
@@ -37,6 +38,8 @@ public class Ghost : Enemy {
 
 			if (target == null)
 				target = thePrincess;
+			if (otherTarget == null)
+				otherTarget = thePrincess;
 
 			
 			counterShake = Mathf.Max (counterShake - 1, 0);

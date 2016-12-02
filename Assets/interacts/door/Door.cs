@@ -51,15 +51,17 @@ public class Door : Interact {
 			if (ifCollision (1 << LayerMask.NameToLayer ("Player"))) {
 				if (nextScene == null || nextScene == "") {
 					if (thePrincess.keys == numKeys) {
-						if (VirtualInput.downPos)
+						if (VirtualInput.downPos) {
+							thePrincess.audioSources [6].Play ();
 							hud.createDialog ("You've gotten all the keys!\nYou're final score is " + fullScore + "\nLoading Next Level......", -1);
+						}
 						if (hud.dialogActive && hud.currentText == hud.givenText && !isLoading) {
 							save.Save (fullScore);
 							SceneManager.LoadSceneAsync( SceneManager.GetActiveScene ().buildIndex + 1 );
 							isLoading = true;
 						}
 					} else if (VirtualInput.downPos) {
-						hud.createDialog ("You need more keys! Numbnuts!", 1);
+						hud.createDialog ("The door remains locked. You need " + (numKeys-thePrincess.keys) + " more keys!", 1);
 						if (hud.dialogActive && hud.givenText == hud.currentText)
 								hud.changeDialog ("You need more keys! Numbnuts!\nQuit pressing DOWN while you're at it!");
 					}
@@ -76,7 +78,7 @@ public class Door : Interact {
 			}
 		}
 		if (thePrincess.health <= 0 && thePrincess.counterState >= 60) {
-			if ( (thePrincess.counterState++) == 60 ) hud.createDialog ("Haha! She Dead! Reloading Level........", -1);
+			if ( (thePrincess.counterState++) == 60 ) hud.createDialog ("You have died. Reloading Level........", -1);
 			if ( hud.dialogActive && hud.currentText == hud.givenText && !isLoading ) {
 					SceneManager.LoadSceneAsync( SceneManager.GetActiveScene().name );
 					isLoading = true;

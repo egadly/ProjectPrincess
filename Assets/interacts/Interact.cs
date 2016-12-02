@@ -4,7 +4,6 @@ using System.Collections;
 public class Interact : MonoBehaviour {
 	
 	protected Vector3 position;
-
 	protected Collider2D ifCollision( LayerMask mask ) {
 
 		BoxCollider2D col = gameObject.GetComponent<BoxCollider2D> ();

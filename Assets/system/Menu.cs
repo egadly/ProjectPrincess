@@ -7,7 +7,7 @@ public class Menu : MonoBehaviour {
 
 	public EventSystem eventSystem;
 	public GameObject selectedObject;
-	private SaveManager save;
+	public SaveManager save;
 
 	private bool buttonSelected;
 	//private bool isPaused = true;
@@ -31,11 +31,11 @@ public class Menu : MonoBehaviour {
 	}
 
 	public void newGame(){
-		SceneManager.LoadScene ("test_level");
+		save.ClearSave ();
 	}
 
 	public void continueGame(){
-		save.Load ();
+		save.LoadLatestLevel ();
 	}
 
 	public void quit(){
