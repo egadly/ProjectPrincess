@@ -67,7 +67,7 @@ public class HUD : MonoBehaviour {
 	void Update () {
 		counterLife = (counterLife + 1);
 		//get player current health
-		if (hearts != null && savedHealth != princess.health) updateHealth ();
+		if (princess!=null && hearts != null && savedHealth != princess.health) updateHealth ();
 		if (dialogActive) updateDialog ();
 		if ( timer != null )if ( timer != null ) updateTimer ();
 

@@ -18,6 +18,7 @@ public class Princess: Character{
 	private int counterInvulnerable;
 
 	public Object[] hitbox = new Object[3];
+	public Menu m;
 
 	//public optionsScript os;
 

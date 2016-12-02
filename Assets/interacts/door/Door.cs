@@ -47,7 +47,7 @@ public class Door : Interact {
 		hud.score = "" + fullScore;
 		hud.gameTime = counterLife;
 
-		if (!options.isPaused) {
+		if (options==null || !options.isPaused ) {
 			if (ifCollision (1 << LayerMask.NameToLayer ("Player"))) {
 				if (nextScene == null || nextScene == "") {
 					if (thePrincess.keys == numKeys) {

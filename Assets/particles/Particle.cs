@@ -25,7 +25,7 @@ public class Particle : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (!pause.isPaused&&!hud.dialogActive) {
+		if (pause==null || (!pause.isPaused&&!hud.dialogActive)) {
 
 			if (counterLife == lengthLife)
 				Destroy (this.gameObject);
