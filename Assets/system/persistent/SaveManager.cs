@@ -137,7 +137,7 @@ public class SaveManager : MonoBehaviour {
                 load = true;
             }
         }
-        
+		Save ();
         SceneManager.LoadSceneAsync(1);
     }
     // Should be it.
