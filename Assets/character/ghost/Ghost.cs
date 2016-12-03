@@ -39,7 +39,7 @@ public class Ghost : Enemy {
 			if (target == null)
 				target = thePrincess;
 			if (otherTarget == null)
-				otherTarget = thePrincess;
+				otherTarget = target;
 
 			
 			counterShake = Mathf.Max (counterShake - 1, 0);
@@ -105,6 +105,9 @@ public class Ghost : Enemy {
 				if (health > 0 ) spriteRenderer.color = new Color (1f, 1f, 1f, .5f);
 				else spriteRenderer.color = new Color (1f, 1f, 1f, .25f);
 				if ( health > 0 && counterChase-- == 0) {
+					GameObject temp = target;
+					target = otherTarget;
+					otherTarget = target;
 					audioSources [0].Play ();
 					ifChase = true;
 					counterChase = lengthChase;
