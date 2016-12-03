@@ -91,11 +91,13 @@ public class Options : MonoBehaviour {
 
     public void quit()
     {
-        #if UNITY_EDITOR
+        /*#if UNITY_EDITOR
 		UnityEditor.EditorApplication.isPlaying = false;
         #else
         Application.Quit();
-        #endif
+        #endif*/
+        if (SceneManager.GetActiveScene().buildIndex == 3) SceneManager.LoadSceneAsync("test_menu");
+        else SceneManager.LoadSceneAsync("level_select_level");
     }
 
 }
