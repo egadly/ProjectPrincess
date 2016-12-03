@@ -107,10 +107,6 @@ public class HUD : MonoBehaviour {
 				VirtualInput.jumpPos = false;
 		} else {
 			if (currentText != givenText && ( counterLife%typeSpeed == 0 ) ) {
-				if (givenText [currentText.Length] == '.')
-					typeSpeed = 10;
-				else
-					typeSpeed = 1;
 				currentText += givenText [currentText.Length];
 				if ( dialogKiller == 1 && VirtualInput.jumpDown && currentText.Length != givenText.Length ) currentText += givenText [currentText.Length];
 				currentMessage.GetComponent<Text> ().text = currentText;
