@@ -10,9 +10,10 @@ public class Menu : MonoBehaviour {
 	public SaveManager save;
 	public bool isLoading;
 
+	public VirtualInput input;
+	public GameObject optionsPanel;
+	public GameObject controlPanel;
 	private bool buttonSelected;
-	//private bool isPaused = true;
-	private Options os;
 	// Use this for initialization
 	void Start () {
 		buttonSelected = false;
@@ -24,6 +25,10 @@ public class Menu : MonoBehaviour {
 		{
 			eventSystem.SetSelectedGameObject(selectedObject);
 			buttonSelected = true;
+		}
+		if ( (optionsPanel!=null && controlPanel!=null) && controlPanel.activeSelf && !input.polling) {
+			controlPanel.SetActive (false);
+			optionsPanel.SetActive (true);
 		}
 	}
 
