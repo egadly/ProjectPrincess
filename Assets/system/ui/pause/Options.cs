@@ -96,8 +96,8 @@ public class Options : MonoBehaviour {
         #else
         Application.Quit();
         #endif*/
-        if (SceneManager.GetActiveScene().buildIndex == 3) SceneManager.LoadSceneAsync("test_menu");
-        else SceneManager.LoadSceneAsync("level_select_level");
+        if (SceneManager.GetActiveScene().buildIndex == 3) SceneManager.LoadSceneAsync(1);
+        else SceneManager.LoadSceneAsync(3);
     }
 
 }

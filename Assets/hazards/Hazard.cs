@@ -42,7 +42,7 @@ public class Hazard : MonoBehaviour {
 					if ( other == null ) other = Physics2D.OverlapArea (
 						new Vector2 (position.x - col.size.x / 2f, position.y + col.size.y / 2f + col.offset.y),
 						new Vector2 (position.x + col.size.x / 2f, position.y - col.size.y / 2f + col.offset.y), 1 << LayerMask.NameToLayer ("Enemies"));
-					if (other) {
+					if (other && other.gameObject.tag!="Witch") {
 						Destroy (this.gameObject);
 						Instantiate (particle, position, Quaternion.identity);
 					}

@@ -31,6 +31,7 @@ public class Gate : Enemy {
 		audioSources = gameObject.GetComponents<AudioSource>();
 		currentVolume = globalVolume;
 		changeVolume (currentVolume);
+		adjacentPlatformCheck (gameObject.GetComponent<BoxCollider2D>(),LayerMask.NameToLayer("Platforms"));
 		
 		counterLife = 0;
 		gravity = 0.0125f;
@@ -70,7 +71,7 @@ public class Gate : Enemy {
 			velocity.y = Mathf.Min (velocity.y, 0.05f);
 
 			if (velocity.y < -.05f)
-				collisionDamage = 3;
+				collisionDamage = 2;
 			else
 				collisionDamage = 0;
 
@@ -115,10 +116,13 @@ public class Gate : Enemy {
 				other = ifCollision (1 << LayerMask.NameToLayer ("EnemyHitboxes"));
 			}
 			if (other && other.gameObject != gameObject) {
-				if (other.gameObject.GetComponent<Enemy> ().position.x < position.x)
-					other.gameObject.GetComponent<Enemy> ().velocity.x = -.025f;
-				else
-					other.gameObject.GetComponent<Enemy> ().velocity.x = .025f;
+				if (directionKnockback == 0) {
+					if (other.gameObject.GetComponent<Enemy> ().position.x < position.x)
+						other.gameObject.GetComponent<Enemy> ().velocity.x = -.025f;
+					else
+						other.gameObject.GetComponent<Enemy> ().velocity.x = .025f;
+				}
+				else other.gameObject.GetComponent<Enemy> ().velocity.x = directionKnockback * .025f;
 			}
 			gameObject.layer = LayerMask.NameToLayer ("Enemies");
 

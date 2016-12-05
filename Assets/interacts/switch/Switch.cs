@@ -39,7 +39,8 @@ public class Switch : Interact {
 				isActive = true;
 			if (enemyActive && ifCollision( 1 << LayerMask.NameToLayer("Enemies")) )
 				isActive = true;
-			if (hitboxActive && ifCollision( 1 << LayerMask.NameToLayer("PlayerHitboxes")) )
+			Collider2D hitbox = ifCollision (1 << LayerMask.NameToLayer ("PlayerHitboxes"));
+			if (hitboxActive && hitbox!=null && hitbox.gameObject.GetComponent<Hitbox>().damage == 3 )
 				isActive = true;
 			if (ehitboxActive && ifCollision( 1 << LayerMask.NameToLayer("EnemyHitboxes")) )
 				isActive = true;
@@ -56,12 +57,13 @@ public class Switch : Interact {
 				curActive = true;
 			if (enemyActive && ifCollision( 1 << LayerMask.NameToLayer("Enemies")) )
 				curActive = true;
-			if (hitboxActive && ifCollision( 1 << LayerMask.NameToLayer("PlayerHitboxes")) )
+			Collider2D hitbox = ifCollision (1 << LayerMask.NameToLayer ("PlayerHitboxes"));
+			if (hitboxActive && hitbox!=null && hitbox.gameObject.GetComponent<Hitbox>().damage == 3 )
 				curActive = true;
 			if (ehitboxActive && ifCollision( 1 << LayerMask.NameToLayer("EnemyHitboxes")) )
 				curActive = true;
 
-			if (curActive)
+			if (isActive)
 				spriteRenderer.sprite = activeSprite;
 			else
 				spriteRenderer.sprite = idleSprite;
