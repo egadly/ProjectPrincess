@@ -36,11 +36,15 @@ public class Ghost : Enemy {
 	void Update () {
 		if ((os == null || !os.isPaused) && (hud == null || !hud.dialogActive)) {
 
-			if (target == null)
-				target = thePrincess;
-			if (otherTarget == null)
+			if (target == null) {
+				if (otherTarget == null)
+					target = thePrincess;
+				else
+					target = otherTarget;
+			}
+			if (otherTarget == null) {
 				otherTarget = target;
-
+			}
 			
 			counterShake = Mathf.Max (counterShake - 1, 0);
 			if (health > 0 && ifChase) {
@@ -70,7 +74,7 @@ public class Ghost : Enemy {
 
 					position += velocity;
 				}
-				spriteRenderer.color = new Color (1f, 1f, 1f, 1f);
+				spriteRenderer.color = new Color (spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 1f);
 
 				if (counterChase-- == 0) {
 					ifChase = false;
@@ -102,12 +106,12 @@ public class Ghost : Enemy {
 			} else {
 				//physAdjust ();
 				position += velocity;
-				if (health > 0 ) spriteRenderer.color = new Color (1f, 1f, 1f, .5f);
-				else spriteRenderer.color = new Color (1f, 1f, 1f, .25f);
+				if (health > 0 ) spriteRenderer.color = new Color (spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, .5f);
+				else spriteRenderer.color = new Color (spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, .25f);
 				if ( health > 0 && counterChase-- == 0) {
 					GameObject temp = target;
 					target = otherTarget;
-					otherTarget = target;
+					otherTarget = temp;
 					audioSources [0].Play ();
 					ifChase = true;
 					counterChase = lengthChase;

@@ -8,6 +8,7 @@ public class Menu : MonoBehaviour {
 	public EventSystem eventSystem;
 	public GameObject selectedObject;
 	public SaveManager save;
+	public bool isLoading;
 
 	private bool buttonSelected;
 	//private bool isPaused = true;
@@ -31,11 +32,17 @@ public class Menu : MonoBehaviour {
 	}
 
 	public void newGame(){
-		save.ClearSave ();
+		if (!isLoading) {
+			isLoading = true;
+			save.ClearSave ();
+		}
 	}
 
 	public void continueGame(){
-		save.LoadLatestLevel ();
+		if (!isLoading) {
+			isLoading = true;
+			save.LoadLatestLevel ();
+		}
 	}
 
 	public void quit(){

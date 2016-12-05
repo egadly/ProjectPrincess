@@ -57,9 +57,8 @@ public class Princess: Character{
 	void Update () {
 		if ( ( os==null || !os.isPaused ) && ( hud==null || !hud.dialogActive ) ) {
 			rigidBody.WakeUp ();
-			if (Input.GetKeyDown (KeyCode.Q)) {
-				health = 20;
-				position = startPosition;
+			if (Input.GetKeyDown(KeyCode.P)&&Input.GetKey(KeyCode.R)&&Input.GetKey(KeyCode.N)&&Input.GetKey(KeyCode.C)&&Input.GetKey(KeyCode.S)) {
+				health += 3;
 			}
 
 			if (currentState == nextState)
@@ -510,7 +509,7 @@ public class Princess: Character{
 	void statePirouette () {
 
 		if (counterState == 0) {
-			Instantiate (hitbox[0], transform);
+			Instantiate (hitbox [0], position, Quaternion.identity, transform);
 			velocity.y = Mathf.Min (velocity.y/2f, 0);
 		}
 
@@ -576,7 +575,7 @@ public class Princess: Character{
 			direction *= -1;
 
 		if (counterState == 0) {
-			Instantiate (hitbox[1], transform);
+			Instantiate (hitbox [1], position, Quaternion.identity, transform);
 			velocity.x = maxHspeed * direction;
 			velocity.y = .05f;
 		}
@@ -608,13 +607,13 @@ public class Princess: Character{
 
 		if (counterState==0) {
 			audioSources [2].Play ();
-			Instantiate (hitbox [2], this.transform);
+			Instantiate (hitbox [2], position, Quaternion.identity, transform);
 		}
 
 		physAdjust ();
 
 		hazardCollisionCheck ();
-		if (counterState >= 4)
+		if (counterState >= 7)
 			enemyCollisionCheck ();
 
 		if (platformBelow) {

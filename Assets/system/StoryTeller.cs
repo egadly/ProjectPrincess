@@ -5,8 +5,9 @@ using UnityEngine.SceneManagement;
 
 public class StoryTeller : MonoBehaviour {
 	public HUD hud;
-	int count = 0;
+	public int count = 0;
 	public string[] text;
+	public bool isLoading = false;
 	// Use this for initialization
 	void Start () {
 		hud = GameObject.FindGameObjectWithTag ("HUD").GetComponent<HUD> ();
@@ -23,7 +24,9 @@ public class StoryTeller : MonoBehaviour {
 			//hud.createDialog("this is the tale of a princess. The princess was loved by all her people. One day the princess was wandering through the woods when she was kidnapped and taken to a tower. ");
 			//hud.createDialog ("The princess decides to escape the tower on her own and without the help of prince. In so begins the adventure of a lifetime to escape the tower and return to her people.");
 		}
-		if (count > text.GetLength (0))
+		if (!hud.dialogActive && count == text.GetLength (0) && !isLoading) {
+			isLoading = true;
 			SceneManager.LoadSceneAsync (SceneManager.GetActiveScene ().buildIndex + 1);
 		}
+	}
 }

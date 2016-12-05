@@ -166,6 +166,10 @@ public class Character : MonoBehaviour {
 	}
 
 	public void changeVolume( float volume ) {
+		StoryTeller storyteller = GameObject.FindObjectOfType<StoryTeller> ();
+		Menu menu = GameObject.FindObjectOfType<Menu> ();
+		if (storyteller != null || menu != null)
+			volume = 0;
 		for (int i = 0; i < audioSources.GetLength(0); i++) {
 			audioSources [i].volume = volume * volumeModifier;
 		}
