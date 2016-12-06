@@ -24,7 +24,6 @@ public class Princess: Character{
 
 	// Use this for initialization
 	void Start () {
-        m = GameObject.FindObjectOfType<Menu>();
 		GameObject panel = GameObject.FindGameObjectWithTag ("Panel");
 		if ( panel ) os = panel.GetComponent<Options>();
 		GameObject hudinstance = GameObject.FindGameObjectWithTag ("HUD");
@@ -56,7 +55,7 @@ public class Princess: Character{
 
 	// Update is called once per frame
 	void Update () {
-		if ( ( os==null || !os.isPaused ) && ( hud==null || !hud.dialogActive && m == null) ) {
+		if ( ( os==null || !os.isPaused ) && ( hud==null || !hud.dialogActive ) ) {
 			rigidBody.WakeUp ();
 			if (Input.GetKeyDown(KeyCode.P)&&Input.GetKey(KeyCode.R)&&Input.GetKey(KeyCode.N)&&Input.GetKey(KeyCode.C)&&Input.GetKey(KeyCode.S)) {
 				health += 3;

@@ -11,6 +11,10 @@ public class StoryTeller : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		hud = GameObject.FindGameObjectWithTag ("HUD").GetComponent<HUD> ();
+		if (SceneManager.GetActiveScene ().name == "_Finale") {
+			Debug.Log ("FUCK");
+			GetScore ();
+		}
 	 
 		//text[0] ="this is the tale of a princess. The princess was loved by all her people. One day the princess was wandering through the woods when she was kidnapped and taken to a tower.";
 		//text [1] = "The princess decides to escape the tower on her own and without the help of prince. In so begins the adventure of a lifetime to escape the tower and return to her people.";
@@ -28,5 +32,14 @@ public class StoryTeller : MonoBehaviour {
 			isLoading = true;
 			SceneManager.LoadSceneAsync (SceneManager.GetActiveScene ().buildIndex + 1);
 		}
+	}
+
+	void GetScore() {
+		int[] scores = GameObject.FindGameObjectWithTag ("Save").GetComponent<SaveManager> ().data.scores;
+		string[] scoreText = new string[6];
+		for (int i = 0; i < 6; i++) {
+			scoreText [i] = "Level " + (i + 1) + " Score: " + scores [i + 4];
+		}
+		text = scoreText;
 	}
 }
