@@ -63,7 +63,7 @@ public class Door : Interact {
                             if (VirtualInput.downPos)
                             {
                                 thePrincess.audioSources[6].Play();
-                                hud.createDialog("You've gotten all the keys!\nYou're final score is " + fullScore + "\nLoading Next Level......", -1);
+                                hud.createDialog("You've gotten all the keys!\nYour final score is " + fullScore + "\nLoading Next Level......", -1);
                             }
                             if (hud.dialogActive && hud.currentText == hud.givenText && !isLoading)
                             {
@@ -74,7 +74,8 @@ public class Door : Interact {
                         }
                         else if (VirtualInput.downPos)
                         {
-                            hud.createDialog("The door remains locked. You need " + (numKeys - thePrincess.keys) + " more keys!", 1);
+							if ( (numKeys - thePrincess.keys) == 1 ) hud.createDialog("The door remains locked. You need " + (numKeys - thePrincess.keys) + " more key!", 1);
+							hud.createDialog("The door remains locked. You need " + (numKeys - thePrincess.keys) + " more keys!", 1);
                         }
                     }
                     else
@@ -104,7 +105,7 @@ public class Door : Interact {
                             int levelScore = s.GetComponent<SaveManager>().data.scores[level - 1];
                             if (levelScore == 0)
                             {
-                                hud.createDialog("You must beat the previous levels open this door!", 1);
+                                hud.createDialog("You must beat the previous levels to open this door!", 1);
                             }
                             else
                             {

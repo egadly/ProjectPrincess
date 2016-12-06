@@ -30,16 +30,25 @@ public class StoryTeller : MonoBehaviour {
 		}
 		if (!hud.dialogActive && count == text.GetLength (0) && !isLoading) {
 			isLoading = true;
-			SceneManager.LoadSceneAsync (SceneManager.GetActiveScene ().buildIndex + 1);
+			if (SceneManager.GetActiveScene ().name == "_Finale")
+				SceneManager.LoadSceneAsync (3);
+			else SceneManager.LoadSceneAsync (SceneManager.GetActiveScene ().buildIndex + 1);
 		}
 	}
 
 	void GetScore() {
 		int[] scores = GameObject.FindGameObjectWithTag ("Save").GetComponent<SaveManager> ().data.scores;
-		string[] scoreText = new string[6];
-		for (int i = 0; i < 6; i++) {
+		string[] scoreText = new string[8];
+		for (int i = 0; i < 7; i++) {
 			scoreText [i] = "Level " + (i + 1) + " Score: " + scores [i + 4];
 		}
-		text = scoreText;
+		scoreText [7] = "Created By Group Five \n Damien Miller \n Ernest Gaddi \n Ivan Guzman \n Kai He \n Kevin Mazas \n Tom Perez";
+		string[] tempText = new string[10];
+		for (int i = 0; i < 2; i++)
+			tempText [i] = text [i];
+		for (int i = 2; i < 10; i++) {
+			tempText [i] = scoreText [i-2];
+		}
+		text = tempText;
 	}
 }

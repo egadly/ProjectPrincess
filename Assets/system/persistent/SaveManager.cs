@@ -37,10 +37,10 @@ public class SaveManager : MonoBehaviour {
 	}
 
 	void Update() {
-		if (Input.GetKeyDown (KeyCode.O))
+		if (Input.GetKeyDown (KeyCode.F1))
 			Save ();
-		if (Input.GetKeyDown (KeyCode.P))
-			Load();
+		//if (Input.GetKeyDown (KeyCode.P))
+			//Load();
 	}
 
 	// In order to write the file…
@@ -130,8 +130,10 @@ public class SaveManager : MonoBehaviour {
             {
                 if (load == true)
                 {
-                    
-                    SceneManager.LoadSceneAsync(i);
+					if (i == 11)
+						SceneManager.LoadSceneAsync (3);
+					else
+                    	SceneManager.LoadSceneAsync(i);
 					break;
                 }
             }
