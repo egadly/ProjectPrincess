@@ -94,7 +94,7 @@ public class Witch : Enemy {
 				if ( health <= 2 ) stateLength = 60;
 				else stateLength = 180;
 				if (counterState == 0) {
-					health--;
+					//health--;
 				}
 				
 				applyFriction (platformBelow);
