@@ -11,8 +11,7 @@ public class StoryTeller : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		hud = GameObject.FindGameObjectWithTag ("HUD").GetComponent<HUD> ();
-		if (SceneManager.GetActiveScene ().name == "_Finale") {
-			Debug.Log ("FUCK");
+		if (SceneManager.GetActiveScene().buildIndex == 11 ) {
 			GetScore ();
 		}
 	 
