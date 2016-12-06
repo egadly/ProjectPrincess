@@ -97,9 +97,10 @@ public class Ghost : Enemy {
 					velocity.y *= -1;
 					counterShake = 6;
 					health -= other.gameObject.GetComponent<Hitbox> ().damage;
-					if (health <= 0)
-						//GameObject.FindGameObjectWithTag ("Player").GetComponent<Princess> ().health++;
-						GameObject.FindGameObjectWithTag ("Door").GetComponent<Door> ().score += 100;
+					if (health <= 0) {
+						if (GameObject.FindGameObjectWithTag ("Player").GetComponent<Princess> ().health < 10 ) GameObject.FindGameObjectWithTag ("Player").GetComponent<Princess> ().health++;
+						GameObject.FindGameObjectWithTag ("Door").GetComponent<Door> ().score += 250;
+					}
 					ifChase = false;
 					counterChase = lengthChase;
 				}

@@ -24,7 +24,7 @@ public class Witch : Enemy {
 
 
 	public int maxHealth;
-	BoxCollider2D collider;
+	BoxCollider2D collider2d;
 
 	// Use this for initialization
 	void Start () {
@@ -35,7 +35,7 @@ public class Witch : Enemy {
 		GameObject hudinstance = GameObject.FindGameObjectWithTag ("HUD");
 		if ( hudinstance ) hud = hudinstance.GetComponent<HUD>();
 		thePrincess = GameObject.FindGameObjectWithTag ("Player").GetComponent<Princess> ();
-		collider = gameObject.GetComponent<BoxCollider2D> ();
+		collider2d = gameObject.GetComponent<BoxCollider2D> ();
 		theKey = GameObject.FindGameObjectWithTag ("Key");
 
 		audioSources = gameObject.GetComponents<AudioSource>();
@@ -86,11 +86,11 @@ public class Witch : Enemy {
 
 			int stateLength;
 			float relativeHealth = (float)health / (float)maxHealth;
-			collider.enabled = true;
+			collider2d.enabled = true;
 			switch (currentState) {
 
 			case WitchStates.Idle:/* ------------------------------------------------------------------------------------------*/
-				collider.enabled = false;
+				collider2d.enabled = false;
 				if ( health <= 2 ) stateLength = 60;
 				else stateLength = 180;
 				if (counterState == 0) {
@@ -124,11 +124,13 @@ public class Witch : Enemy {
 					dashDance = false;
 				}
 				if (counterState != 0 && ((dashDance && (counterState % dashDanceTotal) == 0) || (!dashDance && (counterState % dashDanceTotal) % dashDanceMajor == 0))) {
+					audioSources [2].Play ();
 					rightDir = !rightDir;
 					dashDance = !dashDance;
 
 					if ( relativeHealth <= .3 ) {
 						GameObject temp = ((GameObject)Instantiate (projectile, new Vector3 (position.x + 0.1f, position.y, position.z), Quaternion.identity));
+						audioSources [3].Play ();
 						if (rightDir)
 							temp.GetComponent<Hazard> ().velocity = new Vector3 (temp.GetComponent<Hazard> ().velocity.x * -0.5f, temp.GetComponent<Hazard> ().velocity.y, temp.GetComponent<Hazard> ().velocity.z);
 						else
@@ -141,6 +143,7 @@ public class Witch : Enemy {
 				if (counterState % 6 == 0) {
 					Instantiate (particles [2], new Vector3 (position.x, position.y, position.z), Quaternion.identity);
 				}
+				if (counterState%24 == 0 ) audioSources [1].Play ();
 				if (counterState%3==0 &&( (velocity.x > 0 && !rightDir) || (velocity.x < 0 && rightDir)  )) Instantiate (particles [0], position, Quaternion.identity);
 
 
@@ -164,13 +167,18 @@ public class Witch : Enemy {
 				else {
 					stateLength = 108;
 					if (counterState == 0) {
+						audioSources [0].Play ();
 						velocity.x /= 2f;
 					}
-					if (health % 2 == 0 && ((counterState > 6 && counterState < 17) || (counterState > 80 && counterState < 95 && velocity.y == 0)))
+					if (health % 2 == 0 && ((counterState > 6 && counterState < 17) || (counterState > 80 && counterState < 95 && velocity.y == 0))) {
+						if ( platformBelow ) audioSources [0].Play ();
 						velocity.y = .2f;
+					}
 				}
 				
 				if ((counterState - 6) % 30 == 0) {
+					audioSources [2].Play ();
+					audioSources [3].Play ();
 					GameObject temp = ((GameObject)Instantiate (projectile, new Vector3 (position.x + 0.1f, position.y, position.z), Quaternion.identity));
 					if (rightDir)
 						temp.GetComponent<Hazard> ().velocity = new Vector3 (temp.GetComponent<Hazard> ().velocity.x * -1, temp.GetComponent<Hazard> ().velocity.y, temp.GetComponent<Hazard> ().velocity.z);
@@ -198,6 +206,13 @@ public class Witch : Enemy {
 					temp = ((GameObject)Instantiate (particles [2], new Vector3 (thePrincess.position.x + .2f, position.y, position.z), Quaternion.identity));
 				}
 				if ((counterState+18)%48 == 0) {
+					if ( relativeHealth > 0.5f) {
+						currentGhost = ((GameObject)Instantiate (summonedSoul, position, Quaternion.identity));
+						currentGhost.GetComponent<Ghost> ().health = 2;
+						currentGhost.GetComponent<SpriteRenderer> ().color = new Color (0, 0, .5f, 1f);
+					}
+					audioSources [2].Play ();
+					audioSources [2].Play ();
 					GameObject temp = ((GameObject)Instantiate (projectile, new Vector3 (thePrincess.position.x, position.y, position.z), Quaternion.identity));
 					temp.GetComponent<Hazard> ().velocity = new Vector3 (0f, .2f, 0f);
 					temp.GetComponent<SpriteRenderer> ().color = new Color (0, 0, .5f, 1f);
@@ -211,20 +226,27 @@ public class Witch : Enemy {
 				counterShake = 1;
 				if (counterState == 0) {
 					if (thePrincess.position.x > position.x)
-						velocity.x = maxVspeed / 2f;
+						velocity.x = maxHspeed / 2f;
 					else
-						velocity.x = -maxVspeed / 2f;
-					if (health < 5) {
-						currentGhost = ((GameObject)Instantiate (summonedSoul, position, Quaternion.identity));
-						currentGhost.GetComponent<Ghost> ().health = 1;
-						currentGhost.GetComponent<SpriteRenderer> ().color = new Color (0, 0, .5f, 1f);
-					}
+						velocity.x = -maxHspeed / 2f;
 				}
 				if (counterState % 6 == 0) {
 					Instantiate (particles [2], new Vector3 (position.x - .2f, position.y, position.z), Quaternion.identity);
 					Instantiate (particles [2], new Vector3 (position.x + .2f, position.y, position.z), Quaternion.identity);
 				}
+				if (platformRight || platformLeft) {
+					velocity.x = -velocity.x;
+				}
+				if (position.x == 0) {
+					if (thePrincess.position.x > position.x)
+						velocity.x = maxHspeed / 2f;
+					else
+						velocity.x = -maxHspeed / 2f;
+				}
+					
 				if (counterState % 15 == 0) {
+					audioSources [2].Play ();
+					audioSources [3].Play ();
 					GameObject temp = ((GameObject)Instantiate (projectile, position, Quaternion.identity));
 					temp.GetComponent<Hazard> ().velocity = new Vector3 (0f, .2f, 0f);
 					temp.GetComponent<SpriteRenderer> ().color = new Color (0, 0, .5f, 1f);
@@ -243,7 +265,7 @@ public class Witch : Enemy {
 				}
 				break;
 			case WitchStates.Death:/* ------------------------------------------------------------------------------------------*/
-				collider.enabled = false;
+				collider2d.enabled = false;
 				if (counterState == 0) {
 					Ghost[] ghostArray = GameObject.FindObjectsOfType<Ghost> ();
 					if (ghostArray != null) {
@@ -262,14 +284,19 @@ public class Witch : Enemy {
 					Instantiate (particles [2], new Vector3 (position.x - .2f, position.y, position.z), Quaternion.identity);
 					Instantiate (particles [2], new Vector3 (position.x + .2f, position.y, position.z), Quaternion.identity);
 				}
-				if (platformsToDestroy [counterState / 6] != null) {
+				if (counterState < 120) {
+					counterShake = 120;
+					if ( counterState%15 == 0 )audioSources [3].Play ();
+				} else
+					counterShake = 0;
+				if (platformsToDestroy [counterState / 6] != null && counterState/6 < platformsToDestroy.GetLength(0) ) {
 					Instantiate (particles [2], platformsToDestroy[counterState / 6].transform.position, Quaternion.identity);
 					Destroy (platformsToDestroy [counterState / 6]);
 				}
 				break;
 
 			case WitchStates.Wait:/* ------------------------------------------------------------------------------------------*/
-				collider.enabled = false;
+				collider2d.enabled = false;
 				float arenaSize = 10f;
 				if (Mathf.Abs (thePrincess.position.x - position.x) < 3f ) {
 
@@ -294,14 +321,19 @@ public class Witch : Enemy {
 				break;
 
 			case WitchStates.Rise:/* ------------------------------------------------------------------------------------------*/
-				collider.enabled = false;
+				if ( counterState == 0 ) audioSources [1].Play ();
+				collider2d.enabled = false;
 				if (counterState >= 53) 
 					nextState = WitchStates.Idle;
 				break;
 
 			}
 
-			if ( justLanded ) Instantiate (particles [0], position, Quaternion.identity);
+			if ( justLanded ) {
+				Instantiate (particles [0], position, Quaternion.identity);
+				audioSources [4].Play ();
+				audioSources [1].Play ();
+			}
 			if ( ableHit && currentState != WitchStates.Wait && currentState != WitchStates.Rise && currentState != WitchStates.Death && currentState != WitchStates.Summon) enemyCollisionCheck ();
 			if ( currentState != WitchStates.Death ) physAdjust ();
 
@@ -323,6 +355,7 @@ public class Witch : Enemy {
 		Collider2D other = ifCollision (1 << LayerMask.NameToLayer ("PlayerHitboxes"));
 		if (other) {
 			if (((currentState == WitchStates.Idle || currentState == WitchStates.Summon) && other.GetComponent<Hitbox> ().damage > 0) || other.GetComponent<Hitbox> ().damage > 2) {
+				audioSources [4].Play ();
 				health--;
 				Instantiate (particles [1], position, Quaternion.identity);
 			}
