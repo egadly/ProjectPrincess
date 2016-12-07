@@ -29,9 +29,13 @@ public class StoryTeller : MonoBehaviour {
 		}
 		if (!hud.dialogActive && count == text.GetLength (0) && !isLoading) {
 			isLoading = true;
-			if (SceneManager.GetActiveScene ().name == "_Finale")
+			if (SceneManager.GetActiveScene ().name == "_Finale") {
+				hud.createDialog ("Loading Next Level......", -1);
 				SceneManager.LoadSceneAsync (3);
-			else SceneManager.LoadSceneAsync (SceneManager.GetActiveScene ().buildIndex + 1);
+			} else {
+				hud.createDialog ("Loading......", -1);
+				SceneManager.LoadSceneAsync (SceneManager.GetActiveScene ().buildIndex + 1);
+			}
 		}
 	}
 

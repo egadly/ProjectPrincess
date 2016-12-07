@@ -96,8 +96,10 @@ public class Options : MonoBehaviour {
         #else
         Application.Quit();
         #endif*/
+		GameObject.FindGameObjectWithTag("HUD").GetComponent<HUD>().createDialog("Loading......", -1);
         if (SceneManager.GetActiveScene().buildIndex == 3) SceneManager.LoadSceneAsync(1);
         else SceneManager.LoadSceneAsync(3);
+
     }
 
 }

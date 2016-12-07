@@ -130,6 +130,7 @@ public class SaveManager : MonoBehaviour {
             {
                 if (load == true)
                 {
+					GameObject.FindGameObjectWithTag("HUD").GetComponent<HUD>().createDialog("Loading......", -1);
 					if (i == 11)
 						SceneManager.LoadSceneAsync (3);
 					else
@@ -144,6 +145,7 @@ public class SaveManager : MonoBehaviour {
         }
 		if (!load) {
 			Save ();
+			GameObject.FindGameObjectWithTag("HUD").GetComponent<HUD>().createDialog("Loading......", -1);
 			SceneManager.LoadSceneAsync (2);
 		}
     }

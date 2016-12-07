@@ -109,7 +109,9 @@ public class Door : Interact {
                             }
                             else
                             {
+								hud.createDialog("Loading Next Level......", -1);
                                 SceneManager.LoadSceneAsync(level);
+								isLoading = true;
                             }
                         }
                     }
