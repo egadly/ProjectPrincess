@@ -47,7 +47,8 @@ public class Door : Interact {
 	void Update () {
 
 		if ( !hud.dialogActive ) counterLife++;
-		fullScore = (int)Mathf.Max  ((score + (1000 * (timeLimitInFrames - counterLife)/(float)timeLimitInFrames) + 100 * thePrincess.health ) , 0);
+		if ( SceneManager.GetActiveScene().buildIndex >= 4 ) fullScore = (int)Mathf.Max  ((score + (1000 * (timeLimitInFrames - counterLife)/(float)timeLimitInFrames) + 100 * thePrincess.health ) , 1);
+		else fullScore = (int)Mathf.Max  ((score + (1000 * (timeLimitInFrames - counterLife)/(float)timeLimitInFrames) + 100 * thePrincess.health ) , 0);
 		hud.score = "" + fullScore;
 		hud.gameTime = counterLife;
 
@@ -98,7 +99,9 @@ public class Door : Interact {
 
                         if (level == 4)
                         {
+							hud.createDialog("Loading Next Level......", -1);
                             SceneManager.LoadSceneAsync(4);
+							isLoading = true;
                         }
                         else
                         {

@@ -1,6 +1,4 @@
-﻿
-
-// via https://unity3d.com/learn/tutorials/topics/scripting/persistence-saving-and-loading-data
+﻿// via https://unity3d.com/learn/tutorials/topics/scripting/persistence-saving-and-loading-data
 using UnityEngine;
 using System.Collections;
 using System;
@@ -45,7 +43,6 @@ public class SaveManager : MonoBehaviour {
 
 	// In order to write the file…
 	public void Save( int score = 0 ){
-		Debug.Log ("Saving...");
 		data.scores[SceneManager.GetActiveScene().buildIndex] = Mathf.Max( score, data.scores[SceneManager.GetActiveScene().buildIndex] );
 		data = new PlayerData ( data.scores, music.volume, Character.globalVolume, vInput.jumpButton, vInput.kickButton, vInput.leapButton, vInput.leftButton, vInput.downButton, vInput.rightButton );
 		BinaryFormatter bf = new BinaryFormatter();
@@ -56,7 +53,6 @@ public class SaveManager : MonoBehaviour {
 
 	// In order to read the file…
 	public void Load(){
-		Debug.Log ("Loading...");
 		// if file DNE, a default C# exception will display
 		BinaryFormatter bf = new BinaryFormatter();
         try
@@ -70,7 +66,6 @@ public class SaveManager : MonoBehaviour {
         }
         catch (IOException e)
         {
-            Debug.Log("No file found");
 			data = new PlayerData(new int[SceneManager.sceneCountInBuildSettings], music.volume, Character.globalVolume, vInput.jumpButton, vInput.kickButton, vInput.leapButton, vInput.leftButton, vInput.downButton, vInput.rightButton );
 
         }
