@@ -12,8 +12,6 @@ public class Princess: Character{
 
 	public int keys;
 
-	private Vector3 startPosition;
-
 	private int counterShake;
 	private int counterInvulnerable;
 
@@ -28,7 +26,6 @@ public class Princess: Character{
 		if ( panel ) os = panel.GetComponent<Options>();
 		GameObject hudinstance = GameObject.FindGameObjectWithTag ("HUD");
 		if ( hudinstance ) hud = hudinstance.GetComponent<HUD>();
-		startPosition = transform.position;
 
 		audioSources = gameObject.GetComponents<AudioSource>();
 		currentVolume = globalVolume;

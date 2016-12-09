@@ -216,9 +216,9 @@ public class Witch : Enemy {
 						stateLength = (48 * 20) - 1;
 					else stateLength = ((maxHealth - health) * 48) - 1;
 				}
-				if (counterState == 0) {
-					GameObject temp = ((GameObject)Instantiate (particles [2], new Vector3 (thePrincess.position.x - .2f, position.y, position.z), Quaternion.identity));
-					temp = ((GameObject)Instantiate (particles [2], new Vector3 (thePrincess.position.x + .2f, position.y, position.z), Quaternion.identity));
+				if (counterState%48 == 0) {
+					Instantiate (particles [2], new Vector3 (thePrincess.position.x - .2f, position.y, position.z), Quaternion.identity);
+					Instantiate (particles [2], new Vector3 (thePrincess.position.x + .2f, position.y, position.z), Quaternion.identity);
 				}
 				if ((counterState+18)%48 == 0) {
 					if ( relativeHealth >= 0.6f) {
@@ -317,7 +317,7 @@ public class Witch : Enemy {
 					if ( counterState%15 == 0 )audioSources [3].Play ();
 				} else
 					counterShake = 0;
-				if (platformsToDestroy [counterState / 6] != null && counterState/6 < platformsToDestroy.GetLength(0) ) {
+				if (counterState/6 < platformsToDestroy.GetLength(0) && platformsToDestroy [counterState / 6] != null ) {
 					Instantiate (particles [2], platformsToDestroy[counterState / 6].transform.position, Quaternion.identity);
 					Destroy (platformsToDestroy [counterState / 6]);
 				}

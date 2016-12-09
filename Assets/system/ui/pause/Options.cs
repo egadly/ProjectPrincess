@@ -67,7 +67,7 @@ public class Options : MonoBehaviour {
 		{
 			disabler.enabled = false;
 			isPaused = false;
-			Time.timeScale = 1.0f;
+			if ( !(GameObject.FindGameObjectWithTag("HUD").GetComponent<HUD>().dialogActive) ) Time.timeScale = 1.0f;
 			save.Save ();
 		}
 	}
@@ -96,10 +96,13 @@ public class Options : MonoBehaviour {
         #else
         Application.Quit();
         #endif*/
+		if (!(GameObject.FindGameObjectWithTag ("HUD").GetComponent<HUD> ().dialogActive)) {
+			if (SceneManager.GetActiveScene ().buildIndex == 3)
+				SceneManager.LoadSceneAsync (1);
+			else
+				SceneManager.LoadSceneAsync (3);
+		}
 		GameObject.FindGameObjectWithTag("HUD").GetComponent<HUD>().createDialog("Loading......", -1);
-        if (SceneManager.GetActiveScene().buildIndex == 3) SceneManager.LoadSceneAsync(1);
-        else SceneManager.LoadSceneAsync(3);
-
     }
 
 }

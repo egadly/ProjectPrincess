@@ -11,9 +11,6 @@ public class StoryTeller : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		hud = GameObject.FindGameObjectWithTag ("HUD").GetComponent<HUD> ();
-		if (SceneManager.GetActiveScene().buildIndex == 11 ) {
-			GetScore ();
-		}
 	 
 		//text[0] ="this is the tale of a princess. The princess was loved by all her people. One day the princess was wandering through the woods when she was kidnapped and taken to a tower.";
 		//text [1] = "The princess decides to escape the tower on her own and without the help of prince. In so begins the adventure of a lifetime to escape the tower and return to her people.";
@@ -21,6 +18,9 @@ public class StoryTeller : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		if (SceneManager.GetActiveScene().buildIndex == 11 && text.GetLength(0) < 10 ) {
+			GetScore ();
+		}
 			
 		if(!hud.dialogActive && count<text.GetLength(0)){
 			hud.createDialog (text [count++]);
@@ -29,7 +29,7 @@ public class StoryTeller : MonoBehaviour {
 		}
 		if (!hud.dialogActive && count == text.GetLength (0) && !isLoading) {
 			isLoading = true;
-			if (SceneManager.GetActiveScene ().name == "_Finale") {
+			if (SceneManager.GetActiveScene ().buildIndex == 11) {
 				hud.createDialog ("Loading Next Level......", -1);
 				SceneManager.LoadSceneAsync (3);
 			} else {

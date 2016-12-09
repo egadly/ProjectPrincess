@@ -94,7 +94,7 @@ public class Door : Interact {
 
                 else
                 {
-                    if (VirtualInput.downPos)
+					if (VirtualInput.downPos&&!isLoading)
                     {
 
                         if (level == 4)

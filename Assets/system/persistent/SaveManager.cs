@@ -66,6 +66,7 @@ public class SaveManager : MonoBehaviour {
         }
         catch (IOException e)
         {
+			e = e;
 			data = new PlayerData(new int[SceneManager.sceneCountInBuildSettings], music.volume, Character.globalVolume, vInput.jumpButton, vInput.kickButton, vInput.leapButton, vInput.leftButton, vInput.downButton, vInput.rightButton );
 
         }

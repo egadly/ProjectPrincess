@@ -1,0 +1,50 @@
+Initialize engine version: 5.4.2f2 (b7e030c65c9b)
+GfxDevice: creating device client; threaded=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.0]
+    Renderer: Intel(R) HD Graphics 520 (ID=0x1916)
+    Vendor:   Intel
+    VRAM:     2111 MB
+Begin MonoManager ReloadAssembly
+Platform assembly: C:\Users\e\GitHub\ProjectPrincess\PrincEsscape_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading C:\Users\e\GitHub\ProjectPrincess\PrincEsscape_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: C:\Users\e\GitHub\ProjectPrincess\PrincEsscape_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading C:\Users\e\GitHub\ProjectPrincess\PrincEsscape_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: C:\Users\e\GitHub\ProjectPrincess\PrincEsscape_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading C:\Users\e\GitHub\ProjectPrincess\PrincEsscape_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+Platform assembly: C:\Users\e\GitHub\ProjectPrincess\PrincEsscape_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading C:\Users\e\GitHub\ProjectPrincess\PrincEsscape_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+- Completed reload, in  0.758 seconds
+Platform assembly: C:\Users\e\GitHub\ProjectPrincess\PrincEsscape_Data\Managed\System.Core.dll (this message is harmless)
+Platform assembly: C:\Users\e\GitHub\ProjectPrincess\PrincEsscape_Data\Managed\System.dll (this message is harmless)
+desktop: 1920x1080 60Hz; virtual: 1920x1080 at 0,0
+<RI> Initializing input.
+<RI> Input initialized.
+<RI> Initialized touch support.
+UnloadTime: 1.125974 ms
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 5.944754 ms
+
+Unloading 6 unused Assets to reduce memory usage. Loaded Objects now: 588.
+Total: 6.393608 ms (FindLiveObjects: 0.081493 ms CreateObjectMapping: 0.584960 ms MarkObjects: 2.845443 ms  DeleteObjects: 2.878297 ms)
+
+Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 2.133762 ms
+
+Unloading 6 unused Assets to reduce memory usage. Loaded Objects now: 2056.
+Total: 32.804733 ms (FindLiveObjects: 0.298667 ms CreateObjectMapping: 0.217600 ms MarkObjects: 3.140270 ms  DeleteObjects: 29.145638 ms)
+
+Unloading 7 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 41.271946 ms
+
+Unloading 13 unused Assets to reduce memory usage. Loaded Objects now: 1650.
+Total: 5.932380 ms (FindLiveObjects: 0.248746 ms CreateObjectMapping: 0.209066 ms MarkObjects: 1.898242 ms  DeleteObjects: 3.574191 ms)
+
+Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 12.397242 ms
+
+Unloading 74 unused Assets to reduce memory usage. Loaded Objects now: 2056.
+Total: 23.377949 ms (FindLiveObjects: 0.302933 ms CreateObjectMapping: 0.184320 ms MarkObjects: 2.323202 ms  DeleteObjects: 20.566639 ms)
+
+Setting up 1 worker threads for Enlighten.
+  Thread -> id: 2470 -> priority: 1 
